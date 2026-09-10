@@ -7,6 +7,8 @@ export const DEFAULT_RISK_TABLE: Record<string, RiskLevel> = {
   read_plan: 'read',
   get_status: 'read',
   fetch_config: 'read',
+  get_repository: 'read',
+  list_issues: 'read',
   send_email: 'write',
   update_record: 'write',
   create_migration: 'write',
@@ -14,12 +16,15 @@ export const DEFAULT_RISK_TABLE: Record<string, RiskLevel> = {
   insert_record: 'write',
   bulk_update: 'write',
   bulk_update_staging: 'write',
+  create_issue: 'write',
+  add_comment: 'write',
   delete_table: 'destructive',
   drop_database: 'destructive',
   delete_staging_backup: 'destructive',
   transfer_funds: 'destructive',
   revoke_all_access: 'destructive',
   flush_redis: 'destructive',
+  delete_repository: 'destructive',
 };
 
 export class RiskClassifier {

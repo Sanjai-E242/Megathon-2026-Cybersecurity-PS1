@@ -7,9 +7,91 @@ const PRINCIPAL_KEY_MAP: Record<string, string> = {
   'admin_migration_01': 'sentinel_sec_admin_key_demo_01',
   'agent_support_01': 'sentinel_sec_support_key_01',
   'external-agent-01': 'sentinel_sec_live_key_demo_99',
+  'github_agent_01': 'sentinel_sec_github_key_01',
 };
 
 export const api = {
+  async getGitHubStatus(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/integrations/github/status`);
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      return {
+        id: 'github',
+        name: 'GitHub REST API',
+        connected: false,
+        configured: false,
+        targetInfo: { owner: 'Sanjai-E242', repo: 'sentinel-runtime' },
+        reason: 'Unable to query GitHub integration status (Offline / Demo Fallback)',
+      };
+    }
+  },
+
+  async executeGitHubAction(action: Partial<Action>): Promise<any> {
+    try {
+      const principalId = action.principal_id || 'github_agent_01';
+      const apiKey = PRINCIPAL_KEY_MAP[principalId] || 'sentinel_sec_github_key_01';
+
+      const res = await fetch(`${API_BASE}/integrations/github/action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(action),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('GitHub Action API error, fallback:', err);
+      const decision = await this.submitAction(action);
+      return {
+        execution_status: decision.decision === 'ALLOW' ? 'EXECUTED' : decision.decision === 'CONFIRM' ? 'WAITING_FOR_CONFIRMATION' : 'BLOCKED',
+        sentinel_decision: decision,
+        github_output: decision.decision === 'ALLOW' ? { message: '[Demo Mode] Action executed in fallback demo mode' } : null,
+        message: decision.reason,
+      };
+    }
+  },
+
+  async approveGitHubAction(actionId: string, operator = 'SOC Admin'): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/integrations/github/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Operator-Role': 'SOC_ADMIN',
+          'X-Operator-ID': operator,
+        },
+        body: JSON.stringify({ action_id: actionId, operator }),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('GitHub Approve API error:', err);
+      return { status: 'success', execution_state: 'EXECUTED' };
+    }
+  },
+
+  async rejectGitHubAction(actionId: string, operator = 'SOC Admin'): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/integrations/github/reject`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Operator-Role': 'SOC_ADMIN',
+          'X-Operator-ID': operator,
+        },
+        body: JSON.stringify({ action_id: actionId, operator }),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('GitHub Reject API error:', err);
+      return { status: 'denied', execution_state: 'BLOCKED' };
+    }
+  },
   async submitAction(action: Partial<Action>): Promise<DecisionResult> {
     try {
       const principalId = action.principal_id || 'external-agent-01';

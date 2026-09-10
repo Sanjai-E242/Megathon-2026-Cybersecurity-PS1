@@ -194,6 +194,10 @@ export class SentinelStore extends EventEmitter {
       .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
   }
 
+  public getAction(actionId: string): Action | undefined {
+    return this.actions.find((a) => a.action_id === actionId);
+  }
+
   public getAllActions(): Action[] {
     return [...this.actions];
   }

@@ -8,6 +8,7 @@ import { policiesRouter } from './routes/policies.js';
 import { principalsRouter } from './routes/principals.js';
 import { eventsRouter } from './routes/events.js';
 import { sandboxRouter } from './routes/sandbox.js';
+import { integrationsRouter } from './routes/integrations.js';
 
 dotenv.config();
 
@@ -120,6 +121,7 @@ app.use('/api/policies', policiesRouter);
 app.use('/api/principals', principalsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/sandbox', sandboxRouter);
+app.use('/api/integrations', integrationsRouter);
 
 // Global Error Handler (Production-safe, no stack traces leaked)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

@@ -33,26 +33,32 @@ function getApiKeyMap(): Map<string, ApiKeyConfig> {
   map.set(envAgentKey, {
     principalId: envPrincipalId,
     role: 'dynamic_agent',
-    defaultScopes: ['file.read', 'db.read'],
+    defaultScopes: ['file.read', 'db.read', 'repo.read', 'repo.write'],
   });
 
   // 2. Demo & predefined system keys
   map.set('sentinel_sec_live_key_demo_99', {
     principalId: 'external-agent-01',
     role: 'dynamic_agent',
-    defaultScopes: ['file.read', 'db.read'],
+    defaultScopes: ['file.read', 'db.read', 'repo.read', 'repo.write'],
   });
 
   map.set('sentinel_sec_user_key_demo_42', {
     principalId: 'user_42',
     role: 'sysadmin',
-    defaultScopes: ['file.read', 'db.read', 'db.write', 'db.migrate'],
+    defaultScopes: ['file.read', 'db.read', 'db.write', 'db.migrate', 'repo.read', 'repo.write'],
   });
 
   map.set('sentinel_sec_admin_key_demo_01', {
     principalId: 'admin_migration_01',
     role: 'migration_admin',
-    defaultScopes: ['file.read', 'db.read', 'db.write', 'db.migrate'],
+    defaultScopes: ['file.read', 'db.read', 'db.write', 'db.migrate', 'repo.read', 'repo.write'],
+  });
+
+  map.set('sentinel_sec_github_key_01', {
+    principalId: 'github_agent_01',
+    role: 'github_integration_bot',
+    defaultScopes: ['repo.read', 'repo.write'],
   });
 
   map.set('sentinel_sec_support_key_01', {

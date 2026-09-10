@@ -21,6 +21,14 @@ export interface Action {
   target: string;
   metadata?: Record<string, unknown>;
   risk_class?: RiskLevel;
+  decision?: DecisionType;
+  drift_score?: number;
+  confidence_score?: number;
+  confidence_level?: ConfidenceLevel;
+  confidence_factors?: ConfidenceFactors;
+  evidence?: TrajectoryEvidence;
+  human_explanation?: string;
+  technical_explanation?: string;
 }
 
 export interface AuthResult {
@@ -33,11 +41,31 @@ export interface GateResult {
   reason?: string;
 }
 
+export type ConfidenceLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+
 export interface TrajectoryFactors {
   risk_escalation: 'LOW' | 'MEDIUM' | 'HIGH';
   resource_diversity: 'LOW' | 'MEDIUM' | 'HIGH';
   destructive_actions: 'LOW' | 'MEDIUM' | 'HIGH';
   action_velocity: 'LOW' | 'MEDIUM' | 'HIGH';
+}
+
+export interface ConfidenceFactors {
+  history_depth_score: number;
+  signal_consistency_score: number;
+  escalation_evidence_score: number;
+  metadata_quality_score: number;
+  cross_session_evidence_score: number;
+}
+
+export interface TrajectoryEvidence {
+  history_depth: number;
+  risk_escalations: number;
+  resource_diversity: number;
+  destructive_actions: number;
+  large_operation: boolean;
+  metadata_richness: 'LOW' | 'MEDIUM' | 'HIGH';
+  action_velocity_rate: number;
 }
 
 export interface TrajectoryMetrics {
@@ -48,6 +76,10 @@ export interface TrajectoryMetrics {
   drift_score: number;
   current_session_drift?: number;
   cross_session_drift?: number;
+  confidence_score: number;
+  confidence_level: ConfidenceLevel;
+  confidence_factors: ConfidenceFactors;
+  evidence: TrajectoryEvidence;
   history_length: number;
   factors?: TrajectoryFactors;
   explanation?: string;
@@ -64,6 +96,12 @@ export interface DecisionResult {
   drift_score: number;
   current_session_drift?: number;
   cross_session_drift?: number;
+  confidence_score: number;
+  confidence_level: ConfidenceLevel;
+  confidence_factors: ConfidenceFactors;
+  evidence: TrajectoryEvidence;
+  human_explanation?: string;
+  technical_explanation?: string;
   factors?: TrajectoryFactors;
   explanation?: string;
   requires_human_confirm: boolean;

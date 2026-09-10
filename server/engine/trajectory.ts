@@ -1,4 +1,5 @@
 import { Action, RiskLevel, TrajectoryFactors, TrajectoryMetrics } from './types.js';
+import { DEFAULT_RISK_TABLE } from './risk.js';
 
 const RISK_NUMERIC_MAP: Record<RiskLevel, number> = {
   read: 1,
@@ -61,6 +62,16 @@ export class TrajectoryMonitor {
       ? `Behavioral drift (${Math.round(compositeDrift * 100)}%): ${reasons.join(', ')}.`
       : `Behavioral trajectory within normal parameters (${Math.round(compositeDrift * 100)}% drift).`;
 
+    // Calculate deterministic Trajectory Drift Confidence Score
+    const { confidence_score, confidence_level, confidence_factors, evidence } = this.calculateConfidence(
+      sessionHistory,
+      crossSessionHistory,
+      maxEscalations,
+      maxResources,
+      maxDestructive,
+      maxSpeed
+    );
+
     return {
       distinct_resources: maxResources,
       escalations: maxEscalations,
@@ -69,9 +80,115 @@ export class TrajectoryMonitor {
       drift_score: compositeDrift,
       current_session_drift: currentDrift,
       cross_session_drift: crossDrift,
+      confidence_score,
+      confidence_level,
+      confidence_factors,
+      evidence,
       history_length: Math.max(sessionHistory.length, crossSessionHistory?.length || 0),
       factors,
       explanation,
+    };
+  }
+
+  /**
+   * Deterministic Trajectory Drift Confidence Score calculation (0.00 -> 1.00).
+   * Measures evidence depth & consistency supporting the behavioral assessment.
+   */
+  public calculateConfidence(
+    sessionHistory: Action[],
+    crossSessionHistory?: Action[],
+    maxEscalations: number = 0,
+    maxResources: number = 0,
+    maxDestructive: number = 0,
+    maxSpeed: number = 0
+  ): {
+    confidence_score: number;
+    confidence_level: 'LOW' | 'MEDIUM' | 'HIGH';
+    confidence_factors: {
+      history_depth_score: number;
+      signal_consistency_score: number;
+      escalation_evidence_score: number;
+      metadata_quality_score: number;
+      cross_session_evidence_score: number;
+    };
+    evidence: {
+      history_depth: number;
+      risk_escalations: number;
+      resource_diversity: number;
+      destructive_actions: number;
+      large_operation: boolean;
+      metadata_richness: 'LOW' | 'MEDIUM' | 'HIGH';
+      action_velocity_rate: number;
+    };
+  } {
+    const sessionCount = sessionHistory.length;
+    const crossCount = crossSessionHistory?.length || 0;
+    const lastAction = sessionHistory[sessionHistory.length - 1];
+
+    // Compute inferred metrics if not provided directly
+    const actualEscalations = maxEscalations > 0 ? maxEscalations : this.countEscalations(sessionHistory);
+    const actualResources = maxResources > 0 ? maxResources : new Set(sessionHistory.map(a => a.resource_type)).size;
+    const actualDestructive = maxDestructive > 0 ? maxDestructive : sessionHistory.filter(a => (a.risk_class || DEFAULT_RISK_TABLE[a.operation]) === 'destructive').length;
+    const actualSpeed = maxSpeed > 0 ? maxSpeed : (sessionCount / (this.minutesElapsed(sessionHistory) || 0.5));
+
+    // 1. History Depth (0.40 max weight):
+    // 0 actions -> 0.00, 1 action -> 0.05, 3 actions -> 0.18, 6 actions -> 0.32, 8+ actions -> 0.40
+    const historyDepthScore = Number((Math.min(sessionCount / 8, 1.0) * 0.40).toFixed(3));
+
+    // 2. Cross-Session Corroboration (0.15 weight):
+    const crossSessionEvidenceScore = Number((Math.min(crossCount / 6, 1.0) * 0.15).toFixed(3));
+
+    // 3. Signal Consistency (0.25 weight):
+    // Multiple trajectory signals corroborating the escalation pattern
+    let signalCount = 0;
+    if (actualEscalations > 0) signalCount += 0.35;
+    if (actualResources > 1) signalCount += 0.25;
+    if (actualDestructive > 0) signalCount += 0.25;
+    if (actualSpeed >= 3) signalCount += 0.15;
+    const signalConsistencyScore = Number((Math.min(signalCount, 1.0) * 0.25).toFixed(3));
+
+    // 4. Escalation Evidence (0.15 weight):
+    // Progressive transition depth (e.g. read -> write -> destructive)
+    const escalationEvidenceScore = Number((Math.min(actualEscalations / 2, 1.0) * 0.15).toFixed(3));
+
+    // 5. Metadata Quality / Richness (0.10 weight):
+    const hasLargeOp = Boolean(
+      lastAction?.metadata?.row_count_estimate &&
+      Number(lastAction.metadata.row_count_estimate) >= 500
+    );
+    const hasRichMeta = Boolean(
+      lastAction?.metadata &&
+      Object.keys(lastAction.metadata).length > 0 &&
+      (lastAction.metadata.row_count_estimate || lastAction.metadata.version || lastAction.metadata.environment)
+    );
+    const metadataQualityScore = hasLargeOp ? 0.10 : hasRichMeta ? 0.07 : 0.03;
+
+    // Total raw confidence score (base minimum 0.12 to ensure valid positive baseline)
+    const rawScore = 0.12 + historyDepthScore + crossSessionEvidenceScore + signalConsistencyScore + escalationEvidenceScore + metadataQualityScore;
+    const boundedScore = Number(Math.min(Math.max(rawScore, 0.12), 0.98).toFixed(2));
+
+    const confidence_level: 'LOW' | 'MEDIUM' | 'HIGH' =
+      boundedScore >= 0.70 ? 'HIGH' : boundedScore >= 0.40 ? 'MEDIUM' : 'LOW';
+
+    return {
+      confidence_score: boundedScore,
+      confidence_level,
+      confidence_factors: {
+        history_depth_score: historyDepthScore,
+        signal_consistency_score: signalConsistencyScore,
+        escalation_evidence_score: escalationEvidenceScore,
+        metadata_quality_score: metadataQualityScore,
+        cross_session_evidence_score: crossSessionEvidenceScore,
+      },
+      evidence: {
+        history_depth: sessionCount,
+        risk_escalations: actualEscalations,
+        resource_diversity: actualResources,
+        destructive_actions: actualDestructive,
+        large_operation: hasLargeOp,
+        metadata_richness: hasLargeOp ? 'HIGH' : hasRichMeta ? 'MEDIUM' : 'LOW',
+        action_velocity_rate: Number(actualSpeed.toFixed(1)),
+      },
     };
   }
 
@@ -94,7 +211,7 @@ export class TrajectoryMonitor {
 
     const distinctResources = new Set(history.map((a) => a.resource_type)).size;
     const escalations = this.countEscalations(history);
-    const destructiveCount = history.filter((a) => a.risk_class === 'destructive').length;
+    const destructiveCount = history.filter((a) => (a.risk_class || DEFAULT_RISK_TABLE[a.operation]) === 'destructive').length;
     const minutes = this.minutesElapsed(history) || 0.5;
     const speed = history.length / minutes;
 
@@ -134,8 +251,10 @@ export class TrajectoryMonitor {
   private countEscalations(history: Action[]): number {
     let escalations = 0;
     for (let i = 1; i < history.length; i++) {
-      const prevLevel = RISK_NUMERIC_MAP[history[i - 1].risk_class || 'read'] || 1;
-      const currLevel = RISK_NUMERIC_MAP[history[i].risk_class || 'read'] || 1;
+      const prevClass = history[i - 1].risk_class || DEFAULT_RISK_TABLE[history[i - 1].operation] || 'read';
+      const currClass = history[i].risk_class || DEFAULT_RISK_TABLE[history[i].operation] || 'read';
+      const prevLevel = RISK_NUMERIC_MAP[prevClass] || 1;
+      const currLevel = RISK_NUMERIC_MAP[currClass] || 1;
       if (currLevel > prevLevel) {
         escalations += (currLevel - prevLevel);
       }

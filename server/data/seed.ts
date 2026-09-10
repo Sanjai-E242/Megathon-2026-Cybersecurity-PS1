@@ -5,13 +5,13 @@ export const SEED_PRINCIPALS: Principal[] = [
   {
     principal_id: 'user_42',
     role: 'sysadmin',
-    authorized_scopes: ['db.read', 'db.write', 'db.migrate', 'file.read'],
+    authorized_scopes: ['db.read', 'db.write', 'db.migrate', 'file.read', 'repo.read', 'repo.write'],
     created_at: new Date('2026-03-01T10:00:00Z').toISOString(),
   },
   {
     principal_id: 'admin_migration_01',
     role: 'migration_admin',
-    authorized_scopes: ['db.read', 'db.write', 'db.migrate', 'file.read'],
+    authorized_scopes: ['db.read', 'db.write', 'db.migrate', 'file.read', 'repo.read', 'repo.write'],
     created_at: new Date('2026-03-02T11:00:00Z').toISOString(),
   },
   {
@@ -29,8 +29,14 @@ export const SEED_PRINCIPALS: Principal[] = [
   {
     principal_id: 'external-agent-01',
     role: 'dynamic_agent',
-    authorized_scopes: ['file.read', 'db.read'],
+    authorized_scopes: ['file.read', 'db.read', 'repo.read', 'repo.write'],
     created_at: new Date('2026-03-05T08:00:00Z').toISOString(),
+  },
+  {
+    principal_id: 'github_agent_01',
+    role: 'github_integration_bot',
+    authorized_scopes: ['repo.read', 'repo.write'],
+    created_at: new Date('2026-03-06T08:00:00Z').toISOString(),
   },
 ];
 

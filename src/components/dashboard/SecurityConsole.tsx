@@ -19,6 +19,7 @@ import {
   Bot,
   Code,
   Radio,
+  Sparkles,
 } from 'lucide-react';
 import { Action, ActiveTab, AuditLogEntry, DashboardMetrics, DecisionResult, PolicyRule, Principal, RiskLevel } from '../../types';
 import { api } from '../../lib/api';
@@ -35,6 +36,7 @@ import { PrincipalView } from './PrincipalView';
 import { LiveAgentInput } from './LiveAgentInput';
 import { DeveloperApiDocs } from './DeveloperApiDocs';
 import { ThemeToggle } from '../common/ThemeToggle';
+import { PS1ArchitectureCard } from './PS1ArchitectureCard';
 
 interface SecurityConsoleProps {
   onBackToLanding: () => void;
@@ -129,6 +131,25 @@ const SCENARIO_B_ACTIONS = [
   },
 ];
 
+const SCENARIO_C_ACTIONS = [
+  {
+    principal_id: 'bot_unauth',
+    resource_type: 'file',
+    operation: 'read_file',
+    scope_required: 'file.read',
+    target: 'public_docs.md',
+    metadata: {},
+  },
+  {
+    principal_id: 'bot_unauth',
+    resource_type: 'cloud_iam',
+    operation: 'revoke_all_access',
+    scope_required: 'cloud.iam.admin',
+    target: 'production_iam_policies',
+    metadata: {},
+  },
+];
+
 export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
   onBackToLanding,
   initialScenario,
@@ -144,7 +165,7 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
 
   // Simulation execution state
   const [isRunning, setIsRunning] = useState(false);
-  const [activeScenario, setActiveScenario] = useState<'attack-escalation' | 'legitimate-migration' | null>(null);
+  const [activeScenario, setActiveScenario] = useState<'attack-escalation' | 'legitimate-migration' | 'unauthorized-bot' | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [totalSteps, setTotalSteps] = useState(0);
   const [lastDecision, setLastDecision] = useState<DecisionResult | null>(null);
@@ -165,6 +186,9 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
     setPrincipals(fetchedPrincipals);
   };
 
+  const [viewMode, setViewMode] = useState<'simple' | 'technical'>('simple');
+
+  // Load initial state
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -382,6 +406,38 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
     loadInitialData();
   };
 
+  // Run Scenario C: Unauthorized Bot through real POST /api/actions
+  const handleRunUnauthorizedScenario = async () => {
+    if (isRunning) return;
+    setIsRunning(true);
+    setActiveScenario('unauthorized-bot');
+    setTotalSteps(SCENARIO_C_ACTIONS.length);
+    setCurrentStepIndex(0);
+
+    const sessionId = `sess_unauth_${Date.now().toString().slice(-4)}`;
+
+    for (let i = 0; i < SCENARIO_C_ACTIONS.length; i++) {
+      setCurrentStepIndex(i + 1);
+      const template = SCENARIO_C_ACTIONS[i];
+      const payload: Partial<Action> = {
+        ...template,
+        session_id: sessionId,
+        action_id: `act_${sessionId}_0${i + 1}`,
+        timestamp: new Date().toISOString(),
+      };
+
+      const res = await api.submitAction(payload);
+      setLastDecision(res);
+
+      if (i < SCENARIO_C_ACTIONS.length - 1) {
+        await new Promise((r) => setTimeout(r, 750));
+      }
+    }
+
+    setIsRunning(false);
+    loadInitialData();
+  };
+
   // Approve action handler
   const handleApproveAction = async (actionId: string) => {
     await api.approveDecision(actionId, 'SOC Operator Alpha');
@@ -507,8 +563,36 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
             </button>
           </nav>
 
-          {/* Quick Scenario Buttons & Theme Toggle in Header */}
+          {/* Quick Scenario Buttons & View Mode & Theme Toggle in Header */}
           <div className="flex items-center gap-2">
+            {/* Simple vs Technical View Toggle */}
+            <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono">
+              <button
+                onClick={() => setViewMode('simple')}
+                className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
+                  viewMode === 'simple'
+                    ? 'bg-white dark:bg-cyan-600 text-cyan-800 dark:text-white shadow-sm font-bold border border-slate-200 dark:border-cyan-400/40'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-200" />
+                <span className="hidden sm:inline">Simple View</span>
+                <span className="sm:hidden">Simple</span>
+              </button>
+              <button
+                onClick={() => setViewMode('technical')}
+                className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
+                  viewMode === 'technical'
+                    ? 'bg-white dark:bg-cyan-600 text-cyan-800 dark:text-white shadow-sm font-bold border border-slate-200 dark:border-cyan-400/40'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-200" />
+                <span className="hidden sm:inline">Technical View</span>
+                <span className="sm:hidden">Tech</span>
+              </button>
+            </div>
+
             <ThemeToggle />
 
             <button
@@ -546,12 +630,43 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
       {/* Main Console Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
+        {/* Simple View Header Banner */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-cyan-900/10 via-indigo-900/10 to-teal-900/10 dark:from-cyan-950/40 dark:via-indigo-950/40 dark:to-teal-950/40 border border-cyan-200/80 dark:border-cyan-800/50 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Shield className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                <h1 className="text-xl font-bold font-mono tracking-tight text-slate-900 dark:text-white">
+                  SENTINEL RUNTIME
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                  REAL-TIME SAFETY CONTROL
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-cyan-800 dark:text-cyan-300">
+                Real-time safety control for AI agents
+              </p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
+                Sentinel watches what AI agents try to do, checks whether they're allowed to do it, evaluates behavioral risk & evidence confidence, and stops dangerous actions before execution.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-mono text-slate-500 dark:text-slate-400">Mode:</span>
+              <span className="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-700 dark:text-indigo-300">
+                {viewMode === 'simple' ? '✨ Simple View (Recommended)' : '⚙ Technical View'}
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Top Metric & Status Bar */}
         <TopStatusBar
           metrics={metrics}
           activeSessionId={actions[actions.length - 1]?.session_id}
           isSimulating={isRunning}
           realtimeStatus={realtimeStatus}
+          viewMode={viewMode}
         />
 
         {/* Tab Content Views */}
@@ -568,7 +683,10 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
                   totalSteps={totalSteps}
                   onRunAttack={handleRunAttackScenario}
                   onRunLegitimate={handleRunLegitimateScenario}
+                  onRunUnauthorized={handleRunUnauthorizedScenario}
                   onReset={handleResetDemo}
+                  lastDecision={lastDecision}
+                  viewMode={viewMode}
                 />
               </div>
 
@@ -640,11 +758,19 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
               </div>
             </div>
 
+            {/* PS1 Three-Layer Enforcement Architecture Card */}
+            <PS1ArchitectureCard
+              lastAction={actions[actions.length - 1]}
+              lastDecision={lastDecision}
+              viewMode={viewMode}
+            />
+
             {/* Split View: Live Feed & Behavioral Drift Chart */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-6">
                 <LiveActionFeed
                   actions={actions}
+                  viewMode={viewMode}
                   onSelectAction={(a) => {
                     if (a.decision === 'CONFIRM') {
                       setConfirmTargetAction(a);
@@ -658,18 +784,21 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
                 <DriftChart
                   actions={actions}
                   currentDriftScore={metrics.currentDriftScore}
+                  currentConfidenceScore={lastDecision?.confidence_score ?? 0.45}
+                  viewMode={viewMode}
                 />
               </div>
             </div>
 
             {/* Session Trajectory Escalation Graph */}
-            <SessionTrajectory actions={actions} />
+            <SessionTrajectory actions={actions} viewMode={viewMode} />
 
           </div>
         )}
 
         {activeTab === 'live-agent' && (
           <LiveAgentInput
+            viewMode={viewMode}
             onActionEvaluated={(action, decision) => {
               if (decision.decision === 'CONFIRM') {
                 setConfirmTargetAction(action);

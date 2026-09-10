@@ -54,7 +54,30 @@ export class SentinelSecurityEngine {
       metrics.drift_score
     );
     const latency = Date.now() - startTime;
-    console.log(`[SENTINEL_PIPELINE] DECISION_MADE: action_id=${action.action_id} decision=${decisionEvaluation.decision} reason="${decisionEvaluation.reason}" latency=${latency}ms`);
+
+    // 6. Generate human-friendly and technical explanations
+    let humanExplanation = '';
+    if (decisionEvaluation.decision === 'BLOCK') {
+      if (!authResult.auth_ok) {
+        humanExplanation = `Blocked. This agent does not have permission to perform this type of action (missing required scope '${action.scope_required}').`;
+      } else if (riskClass === 'destructive') {
+        humanExplanation = `Blocked. The action is destructive and the agent's recent behavior shows significant escalation (${Math.round(metrics.drift_score * 100)}% behavioral risk, ${metrics.confidence_level.toLowerCase()} evidence confidence).`;
+      } else {
+        humanExplanation = `Blocked. Action exceeded runtime security thresholds (${Math.round(metrics.drift_score * 100)}% behavioral risk).`;
+      }
+    } else if (decisionEvaluation.decision === 'CONFIRM') {
+      if (riskClass === 'destructive') {
+        humanExplanation = `Human approval required. The agent is authorized, but destructive operations require explicit human operator sign-off.`;
+      } else if (gateResult.requires_confirm) {
+        humanExplanation = `Human approval required. The action is potentially high-impact (bulk modification) and requires operator confirmation.`;
+      } else {
+        humanExplanation = `Human approval required. The agent's recent behavior shows elevated drift (${Math.round(metrics.drift_score * 100)}%), requiring manual verification.`;
+      }
+    } else {
+      humanExplanation = `Allowed. The agent is authorized and the action presents low operational risk within normal behavioral patterns.`;
+    }
+
+    const technicalExplanation = `${decisionEvaluation.reason} [Drift: ${(metrics.drift_score * 100).toFixed(0)}%, Confidence: ${(metrics.confidence_score * 100).toFixed(0)}% (${metrics.confidence_level}), Risk: ${riskClass.toUpperCase()}, Auth: ${authResult.auth_ok ? 'PASS' : 'FAIL'}]`;
 
     const decisionResult: DecisionResult = {
       action_id: action.action_id,
@@ -66,6 +89,12 @@ export class SentinelSecurityEngine {
       drift_score: metrics.drift_score,
       current_session_drift: metrics.current_session_drift,
       cross_session_drift: metrics.cross_session_drift,
+      confidence_score: metrics.confidence_score,
+      confidence_level: metrics.confidence_level,
+      confidence_factors: metrics.confidence_factors,
+      evidence: metrics.evidence,
+      human_explanation: humanExplanation,
+      technical_explanation: technicalExplanation,
       factors: metrics.factors,
       explanation: metrics.explanation,
       requires_human_confirm: decisionEvaluation.requires_human_confirm,
