@@ -94,41 +94,51 @@ export const TopStatusBar: React.FC<TopStatusBarProps> = ({
 
       {/* Top 5 Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <MetricCounter
-          label={isSimple ? "Actions Checked" : "Actions Intercepted"}
-          value={metrics.totalIntercepted}
-          color="cyan"
-          icon={<Activity className="w-4 h-4" />}
-          sublabel={isSimple ? "Total agent actions watched" : "Total evaluated tool calls"}
-        />
-        <MetricCounter
-          label={isSimple ? "Safe Actions" : "Allowed"}
-          value={metrics.allowedCount}
-          color="emerald"
-          icon={<CheckCircle2 className="w-4 h-4" />}
-          sublabel={isSimple ? "Passed safety check" : "Safe & authorized"}
-        />
-        <MetricCounter
-          label={isSimple ? "Awaiting Approval" : "Pending Approval"}
-          value={metrics.pendingCount}
-          color="amber"
-          icon={<AlertTriangle className="w-4 h-4" />}
-          sublabel={isSimple ? "Needs human sign-off" : "Destructive / Gated"}
-        />
-        <MetricCounter
-          label={isSimple ? "Actions Blocked" : "Blocked"}
-          value={metrics.blockedCount}
-          color="rose"
-          icon={<XCircle className="w-4 h-4" />}
-          sublabel={isSimple ? "Dangerous actions stopped" : "High drift / unauthorized"}
-        />
-        <MetricCounter
-          label={isSimple ? "Active Sessions" : "Active Sessions"}
-          value={metrics.activeSessions}
-          color="indigo"
-          icon={<Users className="w-4 h-4" />}
-          sublabel={isSimple ? "Protected agent workflows" : "Isolated session state"}
-        />
+        <div className="col-span-1">
+          <MetricCounter
+            label={isSimple ? "Actions Checked" : "Actions Intercepted"}
+            value={metrics.totalIntercepted}
+            color="cyan"
+            icon={<Activity className="w-4 h-4" />}
+            sublabel={isSimple ? "Total agent actions watched" : "Total evaluated tool calls"}
+          />
+        </div>
+        <div className="col-span-1">
+          <MetricCounter
+            label={isSimple ? "Safe Actions" : "Allowed"}
+            value={metrics.allowedCount}
+            color="emerald"
+            icon={<CheckCircle2 className="w-4 h-4" />}
+            sublabel={isSimple ? "Passed safety check" : "Safe & authorized"}
+          />
+        </div>
+        <div className="col-span-1">
+          <MetricCounter
+            label={isSimple ? "Awaiting Approval" : "Pending Approval"}
+            value={metrics.pendingCount}
+            color="amber"
+            icon={<AlertTriangle className="w-4 h-4" />}
+            sublabel={isSimple ? "Needs human sign-off" : "Destructive / Gated"}
+          />
+        </div>
+        <div className="col-span-1">
+          <MetricCounter
+            label={isSimple ? "Actions Blocked" : "Blocked"}
+            value={metrics.blockedCount}
+            color="rose"
+            icon={<XCircle className="w-4 h-4" />}
+            sublabel={isSimple ? "Dangerous actions stopped" : "High drift / unauthorized"}
+          />
+        </div>
+        <div className="col-span-2 sm:col-span-1 lg:col-span-1">
+          <MetricCounter
+            label={isSimple ? "Active Sessions" : "Active Sessions"}
+            value={metrics.activeSessions}
+            color="indigo"
+            icon={<Users className="w-4 h-4" />}
+            sublabel={isSimple ? "Protected agent workflows" : "Isolated session state"}
+          />
+        </div>
       </div>
     </div>
   );

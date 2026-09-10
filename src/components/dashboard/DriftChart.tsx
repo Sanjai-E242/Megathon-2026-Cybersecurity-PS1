@@ -75,9 +75,9 @@ export const DriftChart: React.FC<DriftChartProps> = ({
     currentConfidenceScore >= 0.70 ? 'HIGH' : currentConfidenceScore >= 0.40 ? 'MEDIUM' : 'LOW';
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col h-[560px] transition-colors duration-200">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col justify-between min-h-[560px] lg:h-[600px] transition-colors duration-200">
       {/* Header with Dual Metric Status */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-violet-600 dark:text-violet-400" />
           <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white">
@@ -98,7 +98,7 @@ export const DriftChart: React.FC<DriftChartProps> = ({
             }`}
           >
             {isCritical ? <ShieldAlert className="w-3.5 h-3.5" /> : isElevated ? <AlertTriangle className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-            <span>Behavior Risk: {Math.round(currentDriftScore * 100)}%</span>
+            <span>Risk: {Math.round(currentDriftScore * 100)}%</span>
             <span className="text-[10px] uppercase font-bold">
               ({isCritical ? 'CRITICAL' : isElevated ? 'ELEVATED' : 'NORMAL'})
             </span>
@@ -107,28 +107,28 @@ export const DriftChart: React.FC<DriftChartProps> = ({
           {/* Confidence Score Badge */}
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-xs border bg-indigo-50 dark:bg-indigo-950/80 border-indigo-300 dark:border-indigo-500/50 text-indigo-700 dark:text-indigo-300 font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Evidence Confidence: {Math.round(currentConfidenceScore * 100)}%</span>
+            <span>Confidence: {Math.round(currentConfidenceScore * 100)}%</span>
             <span className="text-[10px] font-bold uppercase">({confidenceLevel})</span>
           </div>
         </div>
       </div>
 
       {/* Chart Legend with Explanatory Hints */}
-      <div className="flex flex-wrap items-center justify-between text-xs font-sans text-slate-600 dark:text-slate-400 my-3 gap-3">
-        <div className="flex items-center gap-4 font-mono text-[11px]">
+      <div className="flex flex-wrap items-center justify-between text-xs font-sans text-slate-600 dark:text-slate-400 my-2.5 gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 font-mono text-[11px]">
           <span className="flex items-center gap-1.5 font-semibold text-violet-700 dark:text-violet-400">
-            <span className="w-3 h-3 rounded-full bg-violet-500 inline-block" />
-            Behavioral Drift (0% → 100%)
+            <span className="w-2.5 h-2.5 rounded-full bg-violet-500 inline-block" />
+            Behavioral Drift (0-100%)
           </span>
           <span className="flex items-center gap-1.5 font-semibold text-cyan-700 dark:text-cyan-400">
-            <span className="w-3 h-3 rounded-full bg-cyan-400 inline-block" />
-            Trajectory Confidence (0% → 100%)
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block" />
+            Evidence Confidence (0-100%)
           </span>
         </div>
 
         <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-          <Info className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-          <span>Threshold: &gt;75% triggers policy block</span>
+          <Info className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+          <span>&gt;75% triggers policy block</span>
         </div>
       </div>
 

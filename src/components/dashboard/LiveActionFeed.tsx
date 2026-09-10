@@ -37,9 +37,9 @@ export const LiveActionFeed: React.FC<LiveActionFeedProps> = ({
   };
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col h-[560px] transition-colors duration-200">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col min-h-[560px] lg:h-[600px] transition-colors duration-200">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
           <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white">
@@ -102,32 +102,32 @@ export const LiveActionFeed: React.FC<LiveActionFeedProps> = ({
                   {/* Top Bar: WHO, WHAT, WHERE, DECISION */}
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     {/* Left: Agent & Action */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 shrink-0">
                         <Clock className="w-3 h-3 text-slate-400" />
                         {new Date(action.timestamp).toLocaleTimeString()}
                       </span>
 
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[11px]">
-                        <User className="w-3 h-3 text-indigo-500" />
-                        <span>{action.principal_id}</span>
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[11px] max-w-[140px] truncate" title={action.principal_id}>
+                        <User className="w-3 h-3 text-indigo-500 shrink-0" />
+                        <span className="truncate">{action.principal_id}</span>
                       </div>
 
                       <span className="text-slate-400">→</span>
 
-                      <span className="font-bold text-slate-900 dark:text-cyan-300 text-xs bg-cyan-50 dark:bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-200 dark:border-cyan-800/60">
+                      <span className="font-bold text-slate-900 dark:text-cyan-300 text-xs bg-cyan-50 dark:bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-200 dark:border-cyan-800/60 truncate max-w-[160px]" title={action.operation}>
                         {action.operation}
                       </span>
 
                       <span className="text-slate-400">on</span>
 
-                      <span className="text-slate-800 dark:text-slate-200 font-medium text-[11px] bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-800 dark:text-slate-200 font-medium text-[11px] bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 truncate max-w-[140px]" title={action.target}>
                         {action.target}
                       </span>
                     </div>
 
                     {/* Right: Risk, Drift, Confidence, Decision */}
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <RiskPill risk={action.risk_class || 'read'} size="sm" />
 
                       {/* Behavioral Drift Indicator */}
@@ -155,7 +155,7 @@ export const LiveActionFeed: React.FC<LiveActionFeedProps> = ({
                         }`}
                         title="Evidence Confidence: Strength of session history and corroborating signals supporting this assessment"
                       >
-                        Confidence: {confidencePct}% ({confidenceLevel})
+                        Conf: {confidencePct}% ({confidenceLevel})
                       </span>
 
                       <DecisionBadge

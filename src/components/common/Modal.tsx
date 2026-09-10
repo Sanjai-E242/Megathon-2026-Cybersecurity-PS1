@@ -46,14 +46,14 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-[90] bg-black/70 dark:bg-black/85 backdrop-blur-md"
           />
 
           {/* Modal Container */}
@@ -62,10 +62,10 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full ${maxWidth} bg-white dark:bg-[#0c101a] border rounded-2xl shadow-2xl p-6 text-slate-900 dark:text-slate-100 z-10 transition-colors duration-200 ${borderVariant}`}
+            className={`relative w-full ${maxWidth} max-h-[90vh] flex flex-col bg-white dark:bg-[#0c101a] border rounded-2xl shadow-2xl p-6 text-slate-900 dark:text-slate-100 z-[100] transition-colors duration-200 ${borderVariant}`}
           >
             {/* Header */}
-            <div className="flex items-start justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
+            <div className="flex items-start justify-between pb-4 mb-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2 font-mono">
                   {title}
@@ -81,8 +81,8 @@ export const Modal: React.FC<ModalProps> = ({
               </button>
             </div>
 
-            {/* Content Body */}
-            <div>{children}</div>
+            {/* Content Body with Internal Scroll */}
+            <div className="flex-1 overflow-y-auto pr-1">{children}</div>
           </motion.div>
         </div>
       )}

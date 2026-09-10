@@ -66,7 +66,7 @@ export const SessionTrajectory: React.FC<SessionTrajectoryProps> = ({
       </div>
 
       {/* Cross-Session Trajectory Streams */}
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0 max-w-full">
         {sessionEntries.map(([sessionId, sessionActions], sIdx) => {
           const maxDrift = Math.max(...sessionActions.map((a) => a.drift_score ?? 0.05));
           const hasBlock = sessionActions.some((a) => a.decision === 'BLOCK' || a.decision === 'DENIED');
@@ -75,24 +75,24 @@ export const SessionTrajectory: React.FC<SessionTrajectoryProps> = ({
           return (
             <div
               key={sessionId}
-              className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800/80 space-y-3"
+              className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800/80 space-y-3 min-w-0 max-w-full overflow-hidden"
             >
               {/* Session Meta Header */}
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                <div className="flex items-center gap-2 flex-wrap min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0" />
                   <span className="font-bold text-slate-900 dark:text-white">
                     {isSimple ? `Session ${sIdx + 1}:` : `Session Context:`}
                   </span>
-                  <code className="bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-300 text-[11px]">
+                  <code className="bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-300 text-[11px] truncate max-w-[200px]" title={sessionId}>
                     {sessionId}
                   </code>
-                  <span className="text-slate-400 font-sans text-[11px]">
+                  <span className="text-slate-400 font-sans text-[11px] truncate">
                     (Principal: <strong className="text-slate-700 dark:text-slate-300 font-mono">{sessionActions[0]?.principal_id}</strong>)
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px]">
+                <div className="flex items-center gap-2 text-[11px] shrink-0">
                   <span>Peak Drift: <strong className="text-rose-600 dark:text-rose-400">{Math.round(maxDrift * 100)}%</strong></span>
                   <span className="text-slate-400">•</span>
                   <span className={`font-semibold ${
@@ -104,7 +104,8 @@ export const SessionTrajectory: React.FC<SessionTrajectoryProps> = ({
               </div>
 
               {/* Step Sequence for this session */}
-              <div className="flex items-center gap-3 overflow-x-auto pb-2 pt-1 min-w-max">
+              <div className="overflow-x-auto pb-2 pt-1 max-w-full min-w-0 scrollbar-thin">
+                <div className="flex items-center gap-3 w-max">
                 {sessionActions.map((action, idx) => {
                   const isDestructive = action.risk_class === 'destructive';
                   const isWrite = action.risk_class === 'write';
@@ -185,8 +186,9 @@ export const SessionTrajectory: React.FC<SessionTrajectoryProps> = ({
                         </div>
                       )}
                     </React.Fragment>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );

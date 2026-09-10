@@ -1302,33 +1302,37 @@ export const LiveAgentInput: React.FC<LiveAgentInputProps> = ({
       {/* WHY EXPLANATION MODAL */}
       <AnimatePresence>
         {whyModalItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
+            <div
+              className="fixed inset-0 z-[90] bg-black/70 dark:bg-black/85 backdrop-blur-md"
+              onClick={() => setWhyModalItem(null)}
+            />
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="cyber-panel w-full max-w-lg rounded-2xl p-6 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl space-y-4 font-mono text-xs"
+              className="cyber-panel relative z-[100] w-full max-w-lg max-h-[90vh] flex flex-col rounded-2xl p-6 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl font-mono text-xs"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
                 <div className="flex items-center gap-2">
-                  <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span className="font-bold text-sm text-slate-900 dark:text-white">
+                  <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                  <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
                     WHY WAS THIS ACTION {whyModalItem.decision.decision}?
                   </span>
                 </div>
                 <button
                   onClick={() => setWhyModalItem(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Factors Breakdown */}
-              <div className="space-y-3">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3">
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
                   <div className="text-slate-500 font-bold">1. Scope Authorization Boundary</div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {whyModalItem.decision.auth_ok ? (
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" /> Scope '{whyModalItem.action.scope_required}' Authorized
@@ -1343,7 +1347,7 @@ export const LiveAgentInput: React.FC<LiveAgentInputProps> = ({
 
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
                   <div className="text-slate-500 font-bold">2. Risk Classification & Reversibility</div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <RiskPill risk={whyModalItem.decision.risk_class} size="sm" />
                     <span className="text-slate-700 dark:text-slate-300">
                       {whyModalItem.decision.risk_class === 'destructive'
@@ -1384,10 +1388,10 @@ export const LiveAgentInput: React.FC<LiveAgentInputProps> = ({
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800 shrink-0 flex justify-end">
                 <button
                   onClick={() => setWhyModalItem(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs"
+                  className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs transition-colors"
                 >
                   Close Explanation
                 </button>

@@ -41,15 +41,17 @@ export const MetricCounter: React.FC<MetricCounterProps> = ({
   }[color];
 
   return (
-    <div className={`p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${colorStyles} hover:border-opacity-60`}>
-      <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-mono mb-1">
-        <span>{label}</span>
-        {icon && <div className="text-slate-400 dark:text-slate-400">{icon}</div>}
+    <div className={`p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${colorStyles} hover:border-opacity-60 flex flex-col justify-between h-full min-h-[105px]`}>
+      <div>
+        <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-mono mb-1">
+          <span className="font-semibold truncate max-w-[130px]" title={label}>{label}</span>
+          {icon && <div className="text-slate-400 dark:text-slate-400 shrink-0">{icon}</div>}
+        </div>
+        <div className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-white flex items-baseline gap-1">
+          <span>{displayValue}</span>
+        </div>
       </div>
-      <div className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-white flex items-baseline gap-1">
-        <span>{displayValue}</span>
-      </div>
-      {sublabel && <div className="text-[11px] text-slate-500 dark:text-slate-500 mt-1">{sublabel}</div>}
+      {sublabel && <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate" title={sublabel}>{sublabel}</div>}
     </div>
   );
 };

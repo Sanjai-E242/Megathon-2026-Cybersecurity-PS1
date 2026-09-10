@@ -33,12 +33,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsole, onRunAttackDemo }
         </nav>
 
         {/* Action Buttons & Theme Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
 
           <button
             onClick={onRunAttackDemo}
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all hover:scale-105"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all hover:scale-105"
           >
             <Play className="w-3.5 h-3.5" />
             <span>Attack Sim</span>
@@ -46,11 +46,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsole, onRunAttackDemo }
 
           <button
             onClick={onOpenConsole}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md shadow-cyan-500/25 border border-cyan-400/50 transition-all hover:scale-105"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-mono font-semibold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md shadow-cyan-500/25 border border-cyan-400/50 transition-all hover:scale-105"
           >
-            <Terminal className="w-4 h-4" />
-            <span>Launch Console</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <Terminal className="w-3.5 h-3.5" />
+            <span>Console</span>
+            <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
           </button>
         </div>
       </div>
