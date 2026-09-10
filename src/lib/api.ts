@@ -1,12 +1,27 @@
 import { Action, AuditLogEntry, DecisionResult, PolicyRule, Principal } from '../types';
 
-const meta = import.meta as any;
-const envBase = (meta && meta.env && meta.env.VITE_API_BASE_URL) || '';
+// Resolve backend URL cleanly for local development, production Vercel, and custom env
+function resolveApiBase(): string {
+  // 1. Direct static replacement by Vite during build
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim()) {
+    const clean = envUrl.trim().replace(/\/+$/, '');
+    return clean.endsWith('/api') ? clean : `${clean}/api`;
+  }
 
-// Clean base URL determination for both local and production deployments
-export const API_BASE = envBase
-  ? (envBase.endsWith('/api') ? envBase : `${envBase.replace(/\/+$/, '')}/api`)
-  : '/api';
+  // 2. Production fallback if deployed on Vercel or public domain without explicit env
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      return 'https://sentinel-runtime.onrender.com/api';
+    }
+  }
+
+  // 3. Local development proxy default
+  return '/api';
+}
+
+export const API_BASE = resolveApiBase();
 
 const PRINCIPAL_KEY_MAP: Record<string, string> = {
   'user_42': 'sentinel_sec_user_key_demo_42',
