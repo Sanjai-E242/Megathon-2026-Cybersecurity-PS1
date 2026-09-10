@@ -1,0 +1,129 @@
+import React from 'react';
+import { ShieldCheck, Cpu, Zap, Activity, CheckCircle2, AlertTriangle, XCircle, Users, Radio, Wifi, WifiOff } from 'lucide-react';
+import { MetricCounter } from '../common/MetricCounter';
+import { DashboardMetrics } from '../../types';
+
+interface TopStatusBarProps {
+  metrics: DashboardMetrics;
+  activeSessionId?: string;
+  isSimulating?: boolean;
+  realtimeStatus?: 'live' | 'disconnected' | 'reconnecting';
+}
+
+export const TopStatusBar: React.FC<TopStatusBarProps> = ({
+  metrics,
+  activeSessionId,
+  isSimulating,
+  realtimeStatus = 'live',
+}) => {
+  return (
+    <div className="space-y-4">
+      {/* Top Meta Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-mono">
+        
+        {/* Status Indicators */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-semibold tracking-wider">RUNTIME PROTECTION ACTIVE</span>
+          </div>
+
+          {/* Realtime Stream Connection Indicator */}
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-semibold transition-all ${
+            realtimeStatus === 'live'
+              ? 'bg-cyan-950/80 border-cyan-500/50 text-cyan-300 shadow-sm shadow-cyan-500/20'
+              : realtimeStatus === 'reconnecting'
+              ? 'bg-amber-950/80 border-amber-500/50 text-amber-300 animate-pulse'
+              : 'bg-slate-900 border-slate-700 text-slate-400'
+          }`}>
+            {realtimeStatus === 'live' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span>REALTIME CONNECTION ● LIVE</span>
+              </>
+            ) : realtimeStatus === 'reconnecting' ? (
+              <>
+                <Wifi className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                <span>REALTIME RECONNECTING...</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="w-3.5 h-3.5 text-slate-500" />
+                <span>REALTIME CONNECTION ○ DISCONNECTED</span>
+              </>
+            )}
+          </div>
+
+          {isSimulating && (
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-indigo-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping" />
+              <span>SIMULATION STREAMING</span>
+            </div>
+          )}
+        </div>
+
+        {/* Runtime Engine Metadata */}
+        <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5 text-slate-500" />
+            <span>Policy Engine:</span>
+            <span className="text-white font-semibold">v1.4.2</span>
+          </div>
+          <div className="hidden md:flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Engine Latency:</span>
+            <span className="text-cyan-300 font-semibold">{metrics.avgLatencyMs || 10}ms</span>
+          </div>
+          {activeSessionId && (
+            <div className="hidden lg:flex items-center gap-1.5">
+              <span>Active Session:</span>
+              <span className="text-indigo-300 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-500/30">
+                {activeSessionId}
+              </span>
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* Top 5 Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <MetricCounter
+          label="Actions Intercepted"
+          value={metrics.totalIntercepted}
+          color="cyan"
+          icon={<Activity className="w-4 h-4" />}
+          sublabel="Total evaluated tool calls"
+        />
+        <MetricCounter
+          label="Allowed"
+          value={metrics.allowedCount}
+          color="emerald"
+          icon={<CheckCircle2 className="w-4 h-4" />}
+          sublabel="Safe & authorized"
+        />
+        <MetricCounter
+          label="Pending Approval"
+          value={metrics.pendingCount}
+          color="amber"
+          icon={<AlertTriangle className="w-4 h-4" />}
+          sublabel="Destructive / Gated"
+        />
+        <MetricCounter
+          label="Blocked"
+          value={metrics.blockedCount}
+          color="rose"
+          icon={<XCircle className="w-4 h-4" />}
+          sublabel="High drift / unauthorized"
+        />
+        <MetricCounter
+          label="Active Sessions"
+          value={metrics.activeSessions}
+          color="indigo"
+          icon={<Users className="w-4 h-4" />}
+          sublabel="Monitored AI contexts"
+        />
+      </div>
+    </div>
+  );
+};
