@@ -16,26 +16,41 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 // Allowed Origins for CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-  : [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3001',
-    ];
+const envOrigins = [
+  process.env.CORS_ORIGIN,
+  process.env.ALLOWED_ORIGINS,
+  process.env.FRONTEND_URL,
+]
+  .filter(Boolean)
+  .flatMap((o) => (o as string).split(',').map((s) => s.trim().replace(/\/+$/, '')));
+
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3001',
+  'https://sentinel-runtime.vercel.app',
+];
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests (cURL, Python SDK, server-to-server) where origin is undefined
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+    
+    const cleanOrigin = origin.replace(/\/+$/, '');
+    if (
+      allowedOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
       return callback(null, true);
     }
-    return callback(new Error('CORS: Origin not allowed by Sentinel policy'));
+    return callback(new Error(`CORS: Origin ${origin} not allowed by Sentinel policy`));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Operator-Role', 'X-Operator-ID'],
@@ -134,11 +149,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 // Start server if not running inside test runner
 if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
-  const server = app.listen(PORT, () => {
+  const HOST = '0.0.0.0';
+  const server = app.listen(PORT, HOST, () => {
     console.log(`====================================================`);
     console.log(`  SENTINEL RUNTIME - Security Harness for AI Agents `);
     console.log(`  Engine Status: ACTIVE [Deterministic Enforcement] `);
-    console.log(`  Backend API:   http://localhost:${PORT}             `);
+    console.log(`  Backend API:   http://${HOST}:${PORT}               `);
     console.log(`====================================================`);
   });
 

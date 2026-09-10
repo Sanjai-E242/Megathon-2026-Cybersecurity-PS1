@@ -12,7 +12,8 @@ from typing import Dict, Any, Optional
 
 class SentinelClient:
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None):
-        self.base_url = (base_url or os.getenv("SENTINEL_URL", "http://localhost:3001")).rstrip("/")
+        resolved_url = base_url or os.getenv("SENTINEL_API_URL") or os.getenv("SENTINEL_URL") or "http://localhost:3001"
+        self.base_url = resolved_url.rstrip("/")
         self.api_key = api_key or os.getenv("SENTINEL_AGENT_API_KEY", "sentinel_sec_live_key_demo_99")
 
     def check_with_sentinel(self, action: Dict[str, Any]) -> Dict[str, Any]:

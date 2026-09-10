@@ -43,7 +43,8 @@ export class SentinelClient {
   private timeoutMs: number;
 
   constructor(options: SentinelClientOptions = {}) {
-    this.baseUrl = (options.baseUrl || process.env.SENTINEL_URL || 'http://localhost:3001').replace(/\/$/, '');
+    const rawUrl = options.baseUrl || process.env.SENTINEL_API_URL || process.env.SENTINEL_URL || 'http://localhost:3001';
+    this.baseUrl = rawUrl.replace(/\/+$/, '');
     this.apiKey = options.apiKey || process.env.SENTINEL_AGENT_API_KEY || 'sentinel_sec_live_key_demo_99';
     this.timeoutMs = options.timeoutMs || 5000;
   }

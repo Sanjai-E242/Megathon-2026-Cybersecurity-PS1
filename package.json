@@ -9,7 +9,8 @@
     "dev": "concurrently -k -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"cyan.bold,green.bold\" \"tsx watch server/index.ts\" \"vite\"",
     "build": "tsc -b && vite build",
     "test": "vitest run",
-    "start": "tsx server/index.ts"
+    "start": "tsx server/index.ts",
+    "start:server": "tsx server/index.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
@@ -24,7 +25,8 @@
     "react-dom": "^18.3.1",
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
-    "three": "^0.174.0"
+    "three": "^0.174.0",
+    "tsx": "^4.19.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -39,7 +41,6 @@
     "postcss": "^8.5.3",
     "supertest": "^7.2.2",
     "tailwindcss": "^3.4.17",
-    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "vite": "^6.2.0",
     "vitest": "^3.0.6"

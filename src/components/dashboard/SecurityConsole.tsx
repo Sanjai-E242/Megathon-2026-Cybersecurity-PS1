@@ -161,7 +161,7 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [policies, setPolicies] = useState<PolicyRule[]>([]);
   const [principals, setPrincipals] = useState<Principal[]>([]);
-  const [realtimeStatus, setRealtimeStatus] = useState<'live' | 'disconnected' | 'reconnecting'>('live');
+  const [realtimeStatus, setRealtimeStatus] = useState<'live' | 'disconnected' | 'reconnecting'>('reconnecting');
 
   // Simulation execution state
   const [isRunning, setIsRunning] = useState(false);
@@ -176,6 +176,15 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
 
   // Initial Data Loader
   const loadInitialData = async () => {
+    try {
+      const health = await api.getHealth();
+      if (!health) {
+        setRealtimeStatus('disconnected');
+      }
+    } catch {
+      setRealtimeStatus('disconnected');
+    }
+
     const [fetchedLogs, fetchedPolicies, fetchedPrincipals] = await Promise.all([
       api.getAuditLogs(),
       api.getPolicies(),
@@ -200,7 +209,8 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
 
     const setupSSE = () => {
       try {
-        eventSource = new EventSource('/api/events');
+        const streamUrl = api.getRealtimeStreamUrl();
+        eventSource = new EventSource(streamUrl);
 
         eventSource.onopen = () => {
           setRealtimeStatus('live');

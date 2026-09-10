@@ -1,6 +1,12 @@
 import { Action, AuditLogEntry, DecisionResult, PolicyRule, Principal } from '../types';
 
-const API_BASE = '/api';
+const meta = import.meta as any;
+const envBase = (meta && meta.env && meta.env.VITE_API_BASE_URL) || '';
+
+// Clean base URL determination for both local and production deployments
+export const API_BASE = envBase
+  ? (envBase.endsWith('/api') ? envBase : `${envBase.replace(/\/+$/, '')}/api`)
+  : '/api';
 
 const PRINCIPAL_KEY_MAP: Record<string, string> = {
   'user_42': 'sentinel_sec_user_key_demo_42',
@@ -11,6 +17,19 @@ const PRINCIPAL_KEY_MAP: Record<string, string> = {
 };
 
 export const api = {
+  getRealtimeStreamUrl(): string {
+    return `${API_BASE}/events`;
+  },
+
+  async getHealth(): Promise<{ status: string; service: string; version?: string } | null> {
+    try {
+      const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(4000) });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
   async getGitHubStatus(): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/integrations/github/status`);

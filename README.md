@@ -271,6 +271,35 @@ npm run build
 
 ---
 
+## Production Deployment (Vercel & Render)
+
+Sentinel Runtime separates the client-side SOC console from the authoritative runtime security engine:
+
+### 1. Backend Deployment (Render Web Service)
+- **Repository**: `https://github.com/Sanjai-E242/sentinel-runtime.git`
+- **Environment**: Node
+- **Build Command**: `npm install`
+- **Start Command**: `npm start`
+- **Environment Variables**:
+  - `PORT`: `3001` (or Render's automatic port)
+  - `CORS_ORIGIN`: `https://sentinel-runtime.vercel.app`
+  - `SUPABASE_URL`: `https://iudjmyuggwvvldakdjqt.supabase.co`
+  - `SUPABASE_KEY`: `your_supabase_anon_key`
+  - `SENTINEL_AGENT_API_KEY`: `sentinel_sec_live_key_demo_99`
+- **Health Check Path**: `/api/health`
+
+### 2. Frontend Deployment (Vercel)
+- **Framework Preset**: Vite
+- **Root Directory**: `./`
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Environment Variables**:
+  - `VITE_API_BASE_URL`: `https://<YOUR-RENDER-SERVICE-NAME>.onrender.com`
+  - `VITE_SUPABASE_URL`: `https://iudjmyuggwvvldakdjqt.supabase.co`
+  - `VITE_SUPABASE_ANON_KEY`: `your_supabase_anon_key`
+
+---
+
 ## Security Practices
 
 - **Never Commit Secrets**: All credentials and API keys must be kept in `.env` or injected via environment variables. `.env` is ignored by Git.
@@ -283,3 +312,4 @@ npm run build
 
 **Hackathon Demo / Production-Oriented Prototype**  
 This repository is an interactive demonstration and reference architecture for AI agent runtime security harnesses.
+

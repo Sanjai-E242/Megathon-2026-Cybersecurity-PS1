@@ -19,7 +19,7 @@ import urllib.error
 from typing import Dict, Any, Optional
 
 # Default API configuration
-SENTINEL_URL = os.getenv("SENTINEL_URL", "http://localhost:3001").rstrip("/")
+SENTINEL_URL = (os.getenv("SENTINEL_API_URL") or os.getenv("SENTINEL_URL") or "http://localhost:3001").rstrip("/")
 DEFAULT_API_KEY = os.getenv("SENTINEL_AGENT_API_KEY", "sentinel_sec_live_key_demo_99")
 
 KEY_MAP = {
