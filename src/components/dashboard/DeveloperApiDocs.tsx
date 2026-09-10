@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Terminal, Copy, Check, Play, Code, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Terminal, Copy, Check, Play, Code, ExternalLink, ShieldCheck, Key, BookOpen, Layers } from 'lucide-react';
 import { api } from '../../lib/api';
 
 export const DeveloperApiDocs: React.FC = () => {
@@ -14,71 +14,70 @@ export const DeveloperApiDocs: React.FC = () => {
   };
 
   const curlSnippet = `curl -X POST http://localhost:3001/api/actions \\
--H "Content-Type: application/json" \\
--d '{
-  "action_id": "a_external_${Date.now().toString().slice(-4)}",
-  "session_id": "sess_external_agent",
-  "principal_id": "user_42",
-  "resource_type": "database",
-  "operation": "delete_table",
-  "scope_required": "db.write",
-  "target": "orders_prod",
-  "metadata": {
-    "row_count_estimate": 500000
-  }
-}'`;
-
-  const pythonSnippet = `import requests
-
-url = "http://localhost:3001/api/actions"
-payload = {
-    "session_id": "sess_langchain_agent",
-    "principal_id": "user_42",
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $SENTINEL_AGENT_API_KEY" \\
+  -d '{
+    "action_id": "a_external_${Date.now().toString().slice(-4)}",
+    "session_id": "sess_external_001",
+    "principal_id": "external-agent-01",
     "resource_type": "database",
     "operation": "delete_table",
     "scope_required": "db.write",
     "target": "orders_prod",
-    "metadata": {"row_count_estimate": 500000}
-}
+    "metadata": {
+      "row_count_estimate": 500000
+    }
+  }'`;
 
-response = requests.post(url, json=payload)
-decision = response.json()
+  const tsSdkSnippet = `import { SentinelClient } from './external-agent/sentinelClient';
+import { ProtectedToolExecutor } from './external-agent/protectedTool';
 
-print(f"Decision: {decision['decision']}")
-print(f"Drift Score: {decision['drift_score']}")
-print(f"Reason: {decision['reason']}")`;
+const client = new SentinelClient({
+  baseUrl: 'http://localhost:3001',
+  apiKey: process.env.SENTINEL_AGENT_API_KEY
+});
 
-  const tsSnippet = `import axios from 'axios';
+const executor = new ProtectedToolExecutor(client);
 
-async function executeAgentTool(toolCall) {
-  // Intercept tool call before execution
-  const { data: sentinelDecision } = await axios.post('http://localhost:3001/api/actions', {
-    session_id: 'sess_autogen_01',
-    principal_id: 'admin_migration_01',
-    resource_type: toolCall.resourceType,
-    operation: toolCall.operation,
-    scope_required: toolCall.scope,
-    target: toolCall.target,
-  });
+// Proposed tool execution is gated by Sentinel
+const result = await executor.executeProtectedTool({
+  session_id: 'sess_autogen_01',
+  principal_id: 'external-agent-01',
+  resource_type: 'database',
+  operation: 'delete_table',
+  scope_required: 'db.write',
+  target: 'orders_prod',
+  metadata: { row_count_estimate: 500000 }
+});
 
-  if (sentinelDecision.decision === 'BLOCK') {
-    throw new Error(\`Sentinel Intercepted Action: \${sentinelDecision.reason}\`);
-  }
-
-  if (sentinelDecision.decision === 'CONFIRM') {
-    return { status: 'PENDING_HUMAN_APPROVAL', decisionId: sentinelDecision.action_id };
-  }
-
-  // Execute actual tool when ALLOWED
-  return await dispatchToDatabase(toolCall);
+if (result.status === 'BLOCKED') {
+  console.error("Action blocked by Sentinel Runtime! Tool was not executed.");
 }`;
+
+  const pythonSnippet = `from external_agent.sentinel_client import SentinelClient
+from external_agent.protected_tools import ProtectedToolExecutor
+
+client = SentinelClient(base_url="http://localhost:3001")
+executor = ProtectedToolExecutor(client)
+
+# Evaluate and safely execute tool only if cleared
+result = executor.execute_protected_tool({
+    "session_id": "sess_langchain_agent",
+    "principal_id": "external-agent-01",
+    "resource_type": "database",
+    "operation": "delete_table",
+    "scope_required": "db.write",
+    "target": "orders_prod"
+})
+
+print(f"Status: {result['status']}")`;
 
   const runLiveTest = async () => {
     setIsTesting(true);
     try {
       const res = await api.submitAction({
         session_id: 'sess_live_curl_test',
-        principal_id: 'user_42',
+        principal_id: 'external-agent-01',
         resource_type: 'database',
         operation: 'delete_table',
         scope_required: 'db.write',
@@ -94,100 +93,134 @@ async function executeAgentTool(toolCall) {
   };
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6 transition-colors duration-200">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h2 className="text-lg font-bold font-mono text-white flex items-center gap-2">
-            <Terminal className="w-5 h-5 text-cyan-400" />
-            <span>EXTERNAL AGENT INTEGRATION API</span>
+          <h2 className="text-lg font-bold font-mono text-slate-900 dark:text-white flex items-center gap-2">
+            <Code className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+            <span>EXTERNAL AGENT REST API & CLIENT SDK</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Integrate LangChain, AutoGen, CrewAI, or autonomous bots via deterministic HTTP middleware
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            Connect any AI agent framework (LangChain, AutoGen, CrewAI, Python, TypeScript) to Sentinel Runtime.
           </p>
         </div>
 
-        <button
-          onClick={runLiveTest}
-          disabled={isTesting}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold text-white bg-cyan-600 hover:bg-cyan-500 transition-all shadow-md disabled:opacity-50"
-        >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>{isTesting ? 'Sending...' : 'Test cURL Payload Live'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 px-3 py-1 rounded-full">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>API ACTIVE & HEALTHY</span>
+          </div>
+        </div>
       </div>
 
-      {/* Live Test Response Output */}
-      {testResponse && (
-        <div className="p-4 rounded-xl bg-slate-950 border border-cyan-500/50 space-y-2 font-mono text-xs">
-          <div className="flex items-center justify-between text-cyan-300 font-bold">
-            <span>LIVE API RESPONSE (POST /api/actions)</span>
-            <button onClick={() => setTestResponse(null)} className="text-slate-500 hover:text-white">✕</button>
+      {/* Integration Overview Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-1.5 shadow-sm">
+          <div className="text-slate-500 font-bold flex items-center gap-1.5">
+            <Terminal className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>HTTP Endpoint</span>
           </div>
-          <pre className="text-emerald-300 text-[11px] overflow-x-auto whitespace-pre-wrap">{testResponse}</pre>
+          <div className="font-bold text-slate-900 dark:text-white">POST /api/actions</div>
+          <p className="text-[11px] text-slate-500">Evaluates proposed actions before tools execute</p>
         </div>
-      )}
 
-      {/* Code Snippets */}
-      <div className="space-y-4 text-xs font-mono">
-        
-        {/* cURL */}
-        <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-1.5 shadow-sm">
+          <div className="text-slate-500 font-bold flex items-center gap-1.5">
+            <Key className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Authentication</span>
+          </div>
+          <div className="font-bold text-slate-900 dark:text-white">Bearer &lt;API_KEY&gt;</div>
+          <p className="text-[11px] text-slate-500">Configured via SENTINEL_AGENT_API_KEY</p>
+        </div>
+
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-1.5 shadow-sm">
+          <div className="text-slate-500 font-bold flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <span>SDK Clients</span>
+          </div>
+          <div className="font-bold text-slate-900 dark:text-white">TypeScript & Python</div>
+          <p className="text-[11px] text-slate-500">Included in external-agent/ directory</p>
+        </div>
+      </div>
+
+      {/* cURL Request & Response Live Test */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-mono font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <Terminal className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+            <span>cURL Command</span>
+          </h3>
+          <button
+            onClick={() => copyToClipboard(curlSnippet, 'curl')}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-mono transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
+          >
+            {copiedKey === 'curl' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copiedKey === 'curl' ? 'Copied' : 'Copy cURL'}</span>
+          </button>
+        </div>
+
+        <div className="relative rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-950 text-slate-100 p-4 font-mono text-xs">
+          <pre className="overflow-x-auto">{curlSnippet}</pre>
+        </div>
+      </div>
+
+      {/* TypeScript & Python SDK Tabs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* TypeScript Client */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-cyan-300 font-bold flex items-center gap-1.5">
-              <Code className="w-4 h-4 text-cyan-400" /> cURL Command
-            </span>
+            <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">TypeScript SDK</span>
             <button
-              onClick={() => copyToClipboard(curlSnippet, 'curl')}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors border border-slate-700 text-[11px]"
+              onClick={() => copyToClipboard(tsSdkSnippet, 'ts')}
+              className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-900 dark:hover:text-white"
             >
-              {copiedKey === 'curl' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedKey === 'curl' ? 'Copied' : 'Copy cURL'}</span>
+              {copiedKey === 'ts' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+              <span>Copy</span>
             </button>
           </div>
-          <pre className="text-slate-300 text-[11px] overflow-x-auto p-2 rounded bg-black/40 border border-slate-900 leading-relaxed">
-            {curlSnippet}
-          </pre>
+          <div className="rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-950 text-slate-100 p-3.5 font-mono text-[11px]">
+            <pre className="overflow-x-auto max-h-56">{tsSdkSnippet}</pre>
+          </div>
         </div>
 
-        {/* Python */}
-        <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+        {/* Python Client */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-indigo-300 font-bold flex items-center gap-1.5">
-              <Code className="w-4 h-4 text-indigo-400" /> Python (LangChain / Agent Hook)
-            </span>
+            <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">Python 3 SDK</span>
             <button
-              onClick={() => copyToClipboard(pythonSnippet, 'python')}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors border border-slate-700 text-[11px]"
+              onClick={() => copyToClipboard(pythonSnippet, 'py')}
+              className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-900 dark:hover:text-white"
             >
-              {copiedKey === 'python' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedKey === 'python' ? 'Copied' : 'Copy Python'}</span>
+              {copiedKey === 'py' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+              <span>Copy</span>
             </button>
           </div>
-          <pre className="text-slate-300 text-[11px] overflow-x-auto p-2 rounded bg-black/40 border border-slate-900 leading-relaxed">
-            {pythonSnippet}
-          </pre>
-        </div>
-
-        {/* TypeScript */}
-        <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-teal-300 font-bold flex items-center gap-1.5">
-              <Code className="w-4 h-4 text-teal-400" /> Node.js / TypeScript Middleware Wrapper
-            </span>
-            <button
-              onClick={() => copyToClipboard(tsSnippet, 'ts')}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors border border-slate-700 text-[11px]"
-            >
-              {copiedKey === 'ts' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedKey === 'ts' ? 'Copied' : 'Copy TypeScript'}</span>
-            </button>
+          <div className="rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-950 text-slate-100 p-3.5 font-mono text-[11px]">
+            <pre className="overflow-x-auto max-h-56">{pythonSnippet}</pre>
           </div>
-          <pre className="text-slate-300 text-[11px] overflow-x-auto p-2 rounded bg-black/40 border border-slate-900 leading-relaxed">
-            {tsSnippet}
-          </pre>
+        </div>
+      </div>
+
+      {/* Live API Tester */}
+      <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">Interactive API Test Sandbox</span>
+          <button
+            onClick={runLiveTest}
+            disabled={isTesting}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-mono font-bold text-white bg-teal-600 hover:bg-teal-500 transition-colors shadow-sm disabled:opacity-50"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>{isTesting ? 'Sending Request...' : 'Trigger Live Test'}</span>
+          </button>
         </div>
 
+        {testResponse && (
+          <div className="rounded-xl overflow-hidden border border-slate-300 dark:border-slate-800 bg-slate-950 text-emerald-400 p-3.5 font-mono text-[11px]">
+            <pre className="overflow-x-auto">{testResponse}</pre>
+          </div>
+        )}
       </div>
     </div>
   );

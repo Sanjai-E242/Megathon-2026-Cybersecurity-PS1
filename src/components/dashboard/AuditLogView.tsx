@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AuditLogEntry } from '../../types';
 import { DecisionBadge } from '../common/DecisionBadge';
 import { RiskPill } from '../common/RiskPill';
-import { ShieldCheck, Download, Search, Filter, RefreshCw, FileSpreadsheet } from 'lucide-react';
+import { ShieldCheck, Download, Search, RefreshCw } from 'lucide-react';
 
 interface AuditLogViewProps {
   logs: AuditLogEntry[];
@@ -57,16 +57,16 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
   };
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6 transition-colors duration-200">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h2 className="text-lg font-bold font-mono text-white flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-bold font-mono text-slate-900 dark:text-white flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span>ENTERPRISE SECURITY AUDIT TRAIL</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Immutable runtime telemetry and human confirmation logs
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            Immutable runtime telemetry, drift metrics, and human confirmation logs
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
           {onRefresh && (
             <button
               onClick={onRefresh}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
               title="Refresh logs"
             >
               <RefreshCw className="w-4 h-4" />
@@ -83,7 +83,7 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
 
           <button
             onClick={exportCSV}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-cyan-300 bg-cyan-950/60 border border-cyan-500/40 hover:bg-cyan-900/60 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-500/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 transition-colors shadow-sm"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -95,13 +95,13 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
       <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search principal, session, target, or operation..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-cyan-500 shadow-sm"
           />
         </div>
 
@@ -109,7 +109,7 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
         <select
           value={decisionFilter}
           onChange={(e) => setDecisionFilter(e.target.value)}
-          className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500"
+          className="px-3 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-cyan-500 shadow-sm"
         >
           <option value="ALL">All Decisions</option>
           <option value="ALLOW">ALLOW</option>
@@ -123,7 +123,7 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
         <select
           value={riskFilter}
           onChange={(e) => setRiskFilter(e.target.value)}
-          className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500"
+          className="px-3 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-cyan-500 shadow-sm"
         >
           <option value="ALL">All Risk Levels</option>
           <option value="read">READ</option>
@@ -133,9 +133,9 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
       </div>
 
       {/* Audit Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <table className="w-full text-left text-xs font-mono">
-          <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase tracking-wider">
+          <thead className="bg-slate-100 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
             <tr>
               <th className="px-4 py-3">Timestamp</th>
               <th className="px-4 py-3">Principal</th>
@@ -148,29 +148,29 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
               <th className="px-4 py-3">Actor</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-950/40">
             {filteredLogs.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
+                <td colSpan={9} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500">
                   No security events matching current criteria.
                 </td>
               </tr>
             ) : (
               filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-900/50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-400">
+                <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap text-slate-500 dark:text-slate-400">
                     {new Date(log.timestamp).toLocaleTimeString()}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-indigo-300 font-semibold">
+                  <td className="px-4 py-3 whitespace-nowrap text-indigo-700 dark:text-indigo-300 font-semibold">
                     {log.principal_id}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-400">
                     {log.session_id}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap font-bold text-cyan-300">
+                  <td className="px-4 py-3 whitespace-nowrap font-bold text-cyan-700 dark:text-cyan-300">
                     {log.operation || log.event_type}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-300">
+                  <td className="px-4 py-3 whitespace-nowrap text-slate-700 dark:text-slate-300">
                     {log.target || '—'}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -179,7 +179,7 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ logs, onRefresh }) =
                   <td className="px-4 py-3 whitespace-nowrap">
                     <DecisionBadge decision={log.decision || log.event_type} size="sm" />
                   </td>
-                  <td className="px-4 py-3 text-slate-400 max-w-xs truncate" title={log.reason}>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400 max-w-xs truncate" title={log.reason}>
                     {log.reason || '—'}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-slate-500 text-[11px]">

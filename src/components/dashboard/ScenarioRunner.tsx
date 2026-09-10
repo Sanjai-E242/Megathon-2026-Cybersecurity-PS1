@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, RotateCcw, AlertTriangle, ShieldCheck, CheckCircle2, XCircle, Clock, Zap } from 'lucide-react';
-import { Action, DecisionResult } from '../../types';
+import { Play, RotateCcw, Zap } from 'lucide-react';
+import { DecisionResult } from '../../types';
 import { DecisionBadge } from '../common/DecisionBadge';
 
 interface ScenarioRunnerProps {
@@ -26,15 +26,15 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
   lastDecision,
 }) => {
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl transition-colors duration-200">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h2 className="text-lg font-bold font-mono text-white flex items-center gap-2">
-            <Zap className="w-5 h-5 text-cyan-400" />
+          <h2 className="text-lg font-bold font-mono text-slate-900 dark:text-white flex items-center gap-2">
+            <Zap className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
             <span>SCENARIO EXECUTION RUNNER</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             Test the runtime enforcement engine with real sequential agent tool call streams
           </p>
         </div>
@@ -43,7 +43,7 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
         <button
           onClick={onReset}
           disabled={isRunning}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-600 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 disabled:opacity-50 transition-colors shadow-sm"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset Demo</span>
@@ -56,24 +56,24 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
         {/* Scenario A: Escalation Attack */}
         <div className={`p-4 rounded-xl border transition-all ${
           activeScenario === 'attack-escalation'
-            ? 'bg-rose-950/40 border-rose-500/80 shadow-lg shadow-rose-950/50 ring-1 ring-rose-500/50'
-            : 'bg-slate-900/60 border-slate-800 hover:border-rose-500/40'
+            ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-400 dark:border-rose-500/80 shadow-md ring-1 ring-rose-400 dark:ring-rose-500/50'
+            : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-rose-400 dark:hover:border-rose-500/40 shadow-sm'
         }`}>
           <div className="flex items-start justify-between">
             <div>
-              <span className="text-[10px] font-mono text-rose-400 bg-rose-950/80 border border-rose-500/30 px-2 py-0.5 rounded uppercase font-semibold">
+              <span className="text-[10px] font-mono text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-500/30 px-2 py-0.5 rounded uppercase font-semibold">
                 SCENARIO A • 6 STEPS
               </span>
-              <h3 className="font-mono font-bold text-white text-base mt-2">Behavioral Escalation Attack</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Principal: <code className="text-cyan-300">user_42</code> → Stepped privilege creep from config read to production table drop.
+              <h3 className="font-mono font-bold text-slate-900 dark:text-white text-base mt-2">Behavioral Escalation Attack</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                Principal: <code className="text-cyan-700 dark:text-cyan-300">user_42</code> → Stepped privilege creep from config read to production table drop.
               </p>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">
-              Expected Outcome: <span className="text-rose-400 font-bold">BLOCK</span>
+          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+            <span className="text-xs font-mono text-slate-600 dark:text-slate-400">
+              Outcome: <span className="text-rose-600 dark:text-rose-400 font-bold">BLOCK</span>
             </span>
 
             <button
@@ -90,24 +90,24 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
         {/* Scenario B: Legitimate Admin Migration */}
         <div className={`p-4 rounded-xl border transition-all ${
           activeScenario === 'legitimate-migration'
-            ? 'bg-amber-950/40 border-amber-500/80 shadow-lg shadow-amber-950/50 ring-1 ring-amber-500/50'
-            : 'bg-slate-900/60 border-slate-800 hover:border-amber-500/40'
+            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-400 dark:border-amber-500/80 shadow-md ring-1 ring-amber-400 dark:ring-amber-500/50'
+            : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500/40 shadow-sm'
         }`}>
           <div className="flex items-start justify-between">
             <div>
-              <span className="text-[10px] font-mono text-amber-400 bg-amber-950/80 border border-amber-500/30 px-2 py-0.5 rounded uppercase font-semibold">
+              <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-500/30 px-2 py-0.5 rounded uppercase font-semibold">
                 SCENARIO B • 4 STEPS
               </span>
-              <h3 className="font-mono font-bold text-white text-base mt-2">Sanctioned Admin Migration</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Principal: <code className="text-amber-300">admin_migration_01</code> → Authorized staging schema upgrade & backup cleanup.
+              <h3 className="font-mono font-bold text-slate-900 dark:text-white text-base mt-2">Sanctioned Admin Migration</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                Principal: <code className="text-amber-700 dark:text-amber-300">admin_migration_01</code> → Authorized staging schema upgrade & backup cleanup.
               </p>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">
-              Expected Outcome: <span className="text-amber-400 font-bold">CONFIRM → APPROVE</span>
+          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+            <span className="text-xs font-mono text-slate-600 dark:text-slate-400">
+              Outcome: <span className="text-amber-700 dark:text-amber-400 font-bold">CONFIRM → APPROVE</span>
             </span>
 
             <button
@@ -125,17 +125,17 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
 
       {/* Live Stepping Progress Indicator */}
       {activeScenario && (
-        <div className="mt-6 p-4 rounded-xl bg-slate-950/90 border border-slate-800">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+        <div className="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-600 dark:text-slate-400 mb-2">
             <span>
-              Scenario Progress: Step <strong className="text-white">{currentStepIndex}</strong> of {totalSteps}
+              Scenario Progress: Step <strong className="text-slate-900 dark:text-white">{currentStepIndex}</strong> of {totalSteps}
             </span>
-            <span className="text-cyan-400">
+            <span className="text-cyan-700 dark:text-cyan-400">
               {isRunning ? 'Streaming Action (750ms cadence)...' : 'Simulation Complete'}
             </span>
           </div>
 
-          <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${
                 activeScenario === 'attack-escalation'
@@ -155,10 +155,10 @@ export const ScenarioRunner: React.FC<ScenarioRunnerProps> = ({
               animate={{ opacity: 1, y: 0 }}
               className={`mt-4 p-3 rounded-lg border flex flex-wrap items-center justify-between gap-3 text-xs font-mono ${
                 lastDecision.decision === 'BLOCK'
-                  ? 'bg-rose-950/60 border-rose-500/60 text-rose-200'
+                  ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-500/60 text-rose-800 dark:text-rose-200'
                   : lastDecision.decision === 'CONFIRM'
-                  ? 'bg-amber-950/60 border-amber-500/60 text-amber-200'
-                  : 'bg-emerald-950/60 border-emerald-500/60 text-emerald-200'
+                  ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-500/60 text-amber-800 dark:text-amber-200'
+                  : 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-500/60 text-emerald-800 dark:text-emerald-200'
               }`}
             >
               <div className="flex items-center gap-2">

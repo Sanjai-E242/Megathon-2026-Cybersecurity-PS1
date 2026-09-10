@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PolicyRule, RiskLevel } from '../../types';
 import { RiskPill } from '../common/RiskPill';
-import { Sliders, Plus, Edit2, Trash2, Check, X, ShieldAlert, Save } from 'lucide-react';
+import { Sliders, Plus, Edit2, Check, X, Save } from 'lucide-react';
 
 interface PolicyViewProps {
   policies: PolicyRule[];
@@ -12,7 +12,6 @@ interface PolicyViewProps {
 export const PolicyView: React.FC<PolicyViewProps> = ({
   policies,
   onUpdatePolicy,
-  onDeletePolicy,
 }) => {
   const [editingOp, setEditingOp] = useState<string | null>(null);
   const [editRisk, setEditRisk] = useState<RiskLevel>('read');
@@ -54,22 +53,22 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
   };
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6 transition-colors duration-200">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h2 className="text-lg font-bold font-mono text-white flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-cyan-400" />
+          <h2 className="text-lg font-bold font-mono text-slate-900 dark:text-white flex items-center gap-2">
+            <Sliders className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
             <span>RUNTIME RISK POLICY MATRIX</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             Configure reversibility gates and operational risk tiers
           </p>
         </div>
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-cyan-300 bg-cyan-950/80 border border-cyan-500/40 hover:bg-cyan-900/80 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/80 transition-colors shadow-sm"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>{isAdding ? 'Cancel' : 'Add Custom Rule'}</span>
@@ -78,36 +77,36 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
 
       {/* Toast alert */}
       {toastMessage && (
-        <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 text-xs font-mono flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/60 text-emerald-800 dark:text-emerald-300 text-xs font-mono flex items-center gap-2 shadow-sm">
+          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Add Policy Form */}
       {isAdding && (
-        <form onSubmit={handleAddPolicy} className="p-4 rounded-xl bg-slate-950 border border-cyan-500/40 space-y-4">
-          <h3 className="text-xs font-bold font-mono text-cyan-300 uppercase">New Operation Policy</h3>
+        <form onSubmit={handleAddPolicy} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-cyan-400 dark:border-cyan-500/40 space-y-4 shadow-sm">
+          <h3 className="text-xs font-bold font-mono text-cyan-800 dark:text-cyan-300 uppercase">New Operation Policy</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
             <div>
-              <label className="block text-slate-400 mb-1">Operation Name</label>
+              <label className="block text-slate-700 dark:text-slate-400 mb-1 font-semibold">Operation Name</label>
               <input
                 type="text"
                 value={newOp}
                 onChange={(e) => setNewOp(e.target.value)}
                 placeholder="e.g. purge_cache"
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 shadow-sm"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1">Risk Level</label>
+              <label className="block text-slate-700 dark:text-slate-400 mb-1 font-semibold">Risk Level</label>
               <select
                 value={newRisk}
                 onChange={(e) => setNewRisk(e.target.value as RiskLevel)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 shadow-sm"
               >
                 <option value="read">READ</option>
                 <option value="write">WRITE</option>
@@ -116,13 +115,13 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1">Description</label>
+              <label className="block text-slate-700 dark:text-slate-400 mb-1 font-semibold">Description</label>
               <input
                 type="text"
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Optional policy note"
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 shadow-sm"
               />
             </div>
           </div>
@@ -131,7 +130,7 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-white"
+              className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             >
               Cancel
             </button>
@@ -146,9 +145,9 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
       )}
 
       {/* Policy Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <table className="w-full text-left text-xs font-mono">
-          <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase tracking-wider">
+          <thead className="bg-slate-100 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
             <tr>
               <th className="px-4 py-3">Operation Target</th>
               <th className="px-4 py-3">Risk Level</th>
@@ -156,13 +155,13 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-950/40">
             {policies.map((policy) => {
               const isEditing = editingOp === policy.operation;
 
               return (
-                <tr key={policy.operation} className="hover:bg-slate-900/50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap font-bold text-cyan-300">
+                <tr key={policy.operation} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap font-bold text-cyan-700 dark:text-cyan-300">
                     {policy.operation}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -170,7 +169,7 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
                       <select
                         value={editRisk}
                         onChange={(e) => setEditRisk(e.target.value as RiskLevel)}
-                        className="px-2 py-1 rounded bg-slate-900 border border-cyan-500 text-white focus:outline-none"
+                        className="px-2 py-1 rounded bg-white dark:bg-slate-900 border border-cyan-500 text-slate-900 dark:text-white focus:outline-none shadow-sm"
                       >
                         <option value="read">READ</option>
                         <option value="write">WRITE</option>
@@ -180,13 +179,13 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
                       <RiskPill risk={policy.risk_level} size="sm" />
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-400">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                     {isEditing ? (
                       <input
                         type="text"
                         value={editDesc}
                         onChange={(e) => setEditDesc(e.target.value)}
-                        className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                        className="w-full px-2 py-1 rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 shadow-sm"
                       />
                     ) : (
                       policy.description || 'Standard runtime classification'
@@ -197,14 +196,14 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={handleSaveEdit}
-                          className="p-1 rounded bg-emerald-950 text-emerald-400 hover:bg-emerald-900 border border-emerald-500/40"
+                          className="p-1 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-500/40"
                           title="Save"
                         >
                           <Save className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setEditingOp(null)}
-                          className="p-1 rounded bg-slate-800 text-slate-400 hover:text-white"
+                          className="p-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                           title="Cancel"
                         >
                           <X className="w-3.5 h-3.5" />
@@ -213,7 +212,7 @@ export const PolicyView: React.FC<PolicyViewProps> = ({
                     ) : (
                       <button
                         onClick={() => handleStartEdit(policy)}
-                        className="p-1.5 rounded text-slate-400 hover:text-cyan-400 hover:bg-slate-800/80 transition-colors"
+                        className="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors"
                         title="Edit policy"
                       >
                         <Edit2 className="w-3.5 h-3.5" />

@@ -34,11 +34,13 @@ import { PolicyView } from './PolicyView';
 import { PrincipalView } from './PrincipalView';
 import { LiveAgentInput } from './LiveAgentInput';
 import { DeveloperApiDocs } from './DeveloperApiDocs';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 interface SecurityConsoleProps {
   onBackToLanding: () => void;
   initialScenario?: 'attack-escalation' | 'legitimate-migration' | null;
 }
+
 
 // Predefined Scenario actions (routed through real POST /api/actions)
 const SCENARIO_A_ACTIONS = [
@@ -410,17 +412,17 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#06080d] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#06080d] text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-600 dark:selection:text-cyan-200 transition-colors duration-200">
       
       {/* Top Navigation Header */}
-      <header className="sticky top-0 z-40 bg-[#06080d]/90 backdrop-blur-md border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#06080d]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Brand & Return */}
           <div className="flex items-center gap-4">
             <button
               onClick={onBackToLanding}
-              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors border border-slate-800"
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors border border-slate-200 dark:border-slate-800"
               title="Return to Landing Page"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -431,8 +433,8 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
                 <Shield className="w-4 h-4" />
               </div>
               <div>
-                <span className="font-bold text-sm tracking-wider text-white font-mono">SENTINEL</span>
-                <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/80 border border-cyan-500/30 px-1.5 py-0.5 rounded ml-2">
+                <span className="font-bold text-sm tracking-wider text-slate-900 dark:text-white font-mono">SENTINEL</span>
+                <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-1.5 py-0.5 rounded ml-2">
                   SOC CONSOLE
                 </span>
               </div>
@@ -440,13 +442,13 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
           </div>
 
           {/* Tab Navigation */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs font-mono">
+          <nav className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-950/80 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'overview'
-                  ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-cyan-600/30 text-cyan-700 dark:text-cyan-300 border border-slate-300 dark:border-cyan-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Overview
@@ -455,30 +457,30 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
               onClick={() => setActiveTab('live-agent')}
               className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                 activeTab === 'live-agent'
-                  ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border border-slate-300 dark:border-indigo-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Bot className="w-3.5 h-3.5" />
-              <span>Live Agent Input</span>
+              <span>Agent Test Panel</span>
             </button>
             <button
               onClick={() => setActiveTab('developer-api')}
               className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                 activeTab === 'developer-api'
-                  ? 'bg-teal-600/30 text-teal-300 border border-teal-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-teal-600/30 text-teal-700 dark:text-teal-300 border border-slate-300 dark:border-teal-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Code className="w-3.5 h-3.5" />
-              <span>External API</span>
+              <span>API & SDK</span>
             </button>
             <button
               onClick={() => setActiveTab('audit')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'audit'
-                  ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-cyan-600/30 text-cyan-700 dark:text-cyan-300 border border-slate-300 dark:border-cyan-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Audit Trail
@@ -487,8 +489,8 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
               onClick={() => setActiveTab('policies')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'policies'
-                  ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-cyan-600/30 text-cyan-700 dark:text-cyan-300 border border-slate-300 dark:border-cyan-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Policy Matrix
@@ -497,20 +499,22 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
               onClick={() => setActiveTab('principals')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'principals'
-                  ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-cyan-600/30 text-cyan-700 dark:text-cyan-300 border border-slate-300 dark:border-cyan-500/40 font-semibold shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Principals
             </button>
           </nav>
 
-          {/* Quick Scenario Buttons in Header */}
+          {/* Quick Scenario Buttons & Theme Toggle in Header */}
           <div className="flex items-center gap-2">
+            <ThemeToggle />
+
             <button
               onClick={handleRunAttackScenario}
               disabled={isRunning}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-rose-300 bg-rose-950/50 border border-rose-500/40 hover:bg-rose-900/50 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 disabled:opacity-50 transition-colors"
             >
               <Play className="w-3 h-3 fill-current" />
               <span className="hidden sm:inline">Attack</span>
@@ -519,7 +523,7 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
             <button
               onClick={handleRunLegitimateScenario}
               disabled={isRunning}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-amber-300 bg-amber-950/50 border border-amber-500/40 hover:bg-amber-900/50 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-500/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 disabled:opacity-50 transition-colors"
             >
               <Play className="w-3 h-3 fill-current" />
               <span className="hidden sm:inline">Legitimate</span>
@@ -528,7 +532,7 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
             <button
               onClick={handleResetDemo}
               disabled={isRunning}
-              className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 transition-colors"
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors"
               title="Reset Demo"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -537,6 +541,7 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
 
         </div>
       </header>
+
 
       {/* Main Console Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -564,31 +569,56 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
                   onRunAttack={handleRunAttackScenario}
                   onRunLegitimate={handleRunLegitimateScenario}
                   onReset={handleResetDemo}
-                  lastDecision={lastDecision}
                 />
               </div>
 
               <div className="lg:col-span-5">
-                <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl flex flex-col justify-between h-full">
+                <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col justify-between h-full transition-colors duration-200">
+
                   <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                      <h3 className="font-mono font-bold text-white text-sm flex items-center gap-2">
-                        <Bot className="w-4 h-4 text-indigo-400" />
-                        <span>External AI Agent Connector</span>
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                      <h3 className="font-mono font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                        <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span>External Agent Integration</span>
                       </h3>
-                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">
-                        ACTIVE
-                      </span>
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-mono font-semibold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                        <span>CONNECTED</span>
+                      </div>
                     </div>
 
-                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                      Route actions from any autonomous AI agent (LangChain, AutoGen, CrewAI, or Python/cURL scripts) to Sentinel Runtime in real time.
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                      Sentinel sits as a deterministic security harness between autonomous agents (LangChain, AutoGen, CrewAI, Python SDK) and execution tools.
                     </p>
 
-                    <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono space-y-1 mb-4">
-                      <div className="text-slate-500">Method: <span className="text-cyan-400 font-bold">POST</span></div>
-                      <div className="text-slate-500">URL: <span className="text-slate-200">http://localhost:3001/api/actions</span></div>
-                      <div className="text-slate-500">Realtime Push: <span className="text-emerald-400">Automatic (SSE + Supabase)</span></div>
+                    {/* Live Agent Status Metadata Grid */}
+                    <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Agent Identity:</span>
+                        <span className="text-slate-900 dark:text-slate-200 font-semibold">{actions[actions.length - 1]?.principal_id || 'external-agent-01'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Active Session:</span>
+                        <span className="text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-500/30 text-[11px] truncate max-w-[180px]">
+                          {actions[actions.length - 1]?.session_id || 'session_external_001'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">Last Action:</span>
+                        <span className="text-cyan-700 dark:text-cyan-400 font-bold">{actions[actions.length - 1]?.operation || 'delete_table'}</span>
+                      </div>
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800">
+                        <span className="text-slate-500">Sentinel Decision:</span>
+                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                          (lastDecision?.decision || actions[actions.length - 1]?.decision) === 'BLOCK'
+                            ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-500/40'
+                            : (lastDecision?.decision || actions[actions.length - 1]?.decision) === 'CONFIRM'
+                            ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40'
+                            : 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40'
+                        }`}>
+                          {lastDecision?.decision || actions[actions.length - 1]?.decision || 'BLOCK'}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -597,13 +627,13 @@ export const SecurityConsole: React.FC<SecurityConsoleProps> = ({
                       onClick={() => setActiveTab('live-agent')}
                       className="flex-1 py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md transition-all text-center"
                     >
-                      Open Live Agent Input
+                      Open Agent Test Panel
                     </button>
                     <button
                       onClick={() => setActiveTab('developer-api')}
-                      className="px-4 py-2.5 rounded-xl font-mono text-xs font-semibold text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 transition-all"
+                      className="px-4 py-2.5 rounded-xl font-mono text-xs font-semibold text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/80 hover:bg-cyan-100 dark:hover:bg-cyan-900 border border-cyan-300 dark:border-cyan-500/40 transition-all"
                     >
-                      View cURL
+                      View API & SDK
                     </button>
                   </div>
                 </div>

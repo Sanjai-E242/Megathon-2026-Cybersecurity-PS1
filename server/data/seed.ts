@@ -26,6 +26,12 @@ export const SEED_PRINCIPALS: Principal[] = [
     authorized_scopes: ['db.read', 'db.write'],
     created_at: new Date('2026-03-04T08:15:00Z').toISOString(),
   },
+  {
+    principal_id: 'external-agent-01',
+    role: 'dynamic_agent',
+    authorized_scopes: ['file.read', 'db.read'],
+    created_at: new Date('2026-03-05T08:00:00Z').toISOString(),
+  },
 ];
 
 export const SEED_POLICIES: PolicyRule[] = Object.entries(DEFAULT_RISK_TABLE).map(([operation, risk_level]) => ({

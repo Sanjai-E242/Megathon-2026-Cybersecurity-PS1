@@ -33,23 +33,23 @@ export const MetricCounter: React.FC<MetricCounterProps> = ({
   }, [display]);
 
   const colorStyles = {
-    cyan: 'border-cyan-500/20 text-cyan-400 bg-cyan-950/10',
-    emerald: 'border-emerald-500/20 text-emerald-400 bg-emerald-950/10',
-    amber: 'border-amber-500/20 text-amber-400 bg-amber-950/10',
-    rose: 'border-rose-500/20 text-rose-400 bg-rose-950/10',
-    indigo: 'border-indigo-500/20 text-indigo-400 bg-indigo-950/10',
+    cyan: 'border-cyan-200 dark:border-cyan-500/20 text-cyan-700 dark:text-cyan-400 bg-white/90 dark:bg-cyan-950/10 shadow-sm',
+    emerald: 'border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 bg-white/90 dark:bg-emerald-950/10 shadow-sm',
+    amber: 'border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 bg-white/90 dark:bg-amber-950/10 shadow-sm',
+    rose: 'border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400 bg-white/90 dark:bg-rose-950/10 shadow-sm',
+    indigo: 'border-indigo-200 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-400 bg-white/90 dark:bg-indigo-950/10 shadow-sm',
   }[color];
 
   return (
-    <div className={`p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${colorStyles} hover:border-opacity-40`}>
-      <div className="flex items-center justify-between text-slate-400 text-xs font-mono mb-1">
+    <div className={`p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${colorStyles} hover:border-opacity-60`}>
+      <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-mono mb-1">
         <span>{label}</span>
-        {icon && <div className="text-slate-400">{icon}</div>}
+        {icon && <div className="text-slate-400 dark:text-slate-400">{icon}</div>}
       </div>
-      <div className="text-2xl font-bold font-mono tracking-tight text-white flex items-baseline gap-1">
+      <div className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-white flex items-baseline gap-1">
         <span>{displayValue}</span>
       </div>
-      {sublabel && <div className="text-[11px] text-slate-500 mt-1">{sublabel}</div>}
+      {sublabel && <div className="text-[11px] text-slate-500 dark:text-slate-500 mt-1">{sublabel}</div>}
     </div>
   );
 };

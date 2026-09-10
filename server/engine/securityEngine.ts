@@ -20,7 +20,8 @@ export class SentinelSecurityEngine {
   public evaluateAction(
     action: Action,
     principal: Principal,
-    sessionHistory: Action[]
+    sessionHistory: Action[],
+    crossSessionHistory?: Action[]
   ): { decisionResult: DecisionResult; metrics: ReturnType<TrajectoryMonitor['calculateDrift']> } {
     const startTime = Date.now();
 
@@ -37,10 +38,11 @@ export class SentinelSecurityEngine {
     const authResult = this.authEngine.checkAuth(action, principal);
     console.log(`[SENTINEL_PIPELINE] AUTH_CHECK: auth_ok=${authResult.auth_ok} ${authResult.reason || 'authorized'}`);
 
-    // 4. Update and calculate Trajectory Drift Score
-    const updatedHistory = [...sessionHistory, action];
-    const metrics = this.trajectoryMonitor.calculateDrift(updatedHistory);
-    console.log(`[SENTINEL_PIPELINE] TRAJECTORY_UPDATED: drift_score=${metrics.drift_score} escalations=${metrics.escalations} speed=${metrics.speed}`);
+    // 4. Update and calculate Trajectory Drift Score (Current Session + Cross Session)
+    const updatedCurrentHistory = [...sessionHistory, action];
+    const updatedCrossHistory = crossSessionHistory ? [...crossSessionHistory, action] : undefined;
+    const metrics = this.trajectoryMonitor.calculateDrift(updatedCurrentHistory, updatedCrossHistory);
+    console.log(`[SENTINEL_PIPELINE] TRAJECTORY_UPDATED: drift_score=${metrics.drift_score} current_drift=${metrics.current_session_drift} cross_drift=${metrics.cross_session_drift}`);
 
     // 5. Compute Final Execution Decision
     const decisionEvaluation = this.decisionEngine.decide(
@@ -62,6 +64,10 @@ export class SentinelSecurityEngine {
       risk_class: riskClass,
       auth_ok: authResult.auth_ok,
       drift_score: metrics.drift_score,
+      current_session_drift: metrics.current_session_drift,
+      cross_session_drift: metrics.cross_session_drift,
+      factors: metrics.factors,
+      explanation: metrics.explanation,
       requires_human_confirm: decisionEvaluation.requires_human_confirm,
       created_at: new Date().toISOString(),
       execution_latency_ms: Math.max(latency, 8),

@@ -33,13 +33,24 @@ export interface GateResult {
   reason?: string;
 }
 
+export interface TrajectoryFactors {
+  risk_escalation: 'LOW' | 'MEDIUM' | 'HIGH';
+  resource_diversity: 'LOW' | 'MEDIUM' | 'HIGH';
+  destructive_actions: 'LOW' | 'MEDIUM' | 'HIGH';
+  action_velocity: 'LOW' | 'MEDIUM' | 'HIGH';
+}
+
 export interface TrajectoryMetrics {
   distinct_resources: number;
   escalations: number;
   destructive_count: number;
   speed: number;
   drift_score: number;
+  current_session_drift?: number;
+  cross_session_drift?: number;
   history_length: number;
+  factors?: TrajectoryFactors;
+  explanation?: string;
 }
 
 export interface DecisionResult {
@@ -51,11 +62,16 @@ export interface DecisionResult {
   risk_class: RiskLevel;
   auth_ok: boolean;
   drift_score: number;
+  current_session_drift?: number;
+  cross_session_drift?: number;
+  factors?: TrajectoryFactors;
+  explanation?: string;
   requires_human_confirm: boolean;
   approved_by?: string;
   approved_at?: string;
   created_at: string;
   execution_latency_ms?: number;
+  idempotent_replay?: boolean;
 }
 
 export interface AuditLogEntry {

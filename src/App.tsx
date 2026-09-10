@@ -6,9 +6,10 @@ import { SolutionPipeline } from './components/landing/SolutionPipeline';
 import { ThreeLayersSection } from './components/landing/ThreeLayersSection';
 import { ContrastSection } from './components/landing/ContrastSection';
 import { CTASection } from './components/landing/CTASection';
+import { ThemeProvider } from './lib/theme';
 import { SecurityConsole } from './components/dashboard/SecurityConsole';
 
-export const App: React.FC = () => {
+export const AppContent: React.FC = () => {
   const [view, setView] = useState<'landing' | 'console'>('landing');
   const [initialScenario, setInitialScenario] = useState<'attack-escalation' | 'legitimate-migration' | null>(null);
 
@@ -42,7 +43,8 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#06080d] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#06080d] dark:text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-600 dark:selection:text-cyan-200 transition-colors duration-200">
+
       {view === 'console' ? (
         <SecurityConsole
           onBackToLanding={backToLanding}
@@ -78,4 +80,13 @@ export const App: React.FC = () => {
   );
 };
 
+export const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+};
+
 export default App;
+

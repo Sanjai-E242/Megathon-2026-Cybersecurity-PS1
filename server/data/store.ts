@@ -182,6 +182,18 @@ export class SentinelStore extends EventEmitter {
     return this.actions.filter((a) => a.session_id === sessionId);
   }
 
+  public getPrincipalActions(principalId: string, limit = 50): Action[] {
+    return this.actions
+      .filter((a) => a.principal_id === principalId)
+      .slice(-limit);
+  }
+
+  public getPrincipalSessions(principalId: string): SessionInfo[] {
+    return Array.from(this.sessions.values())
+      .filter((s) => s.principal_id === principalId)
+      .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+  }
+
   public getAllActions(): Action[] {
     return [...this.actions];
   }

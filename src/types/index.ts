@@ -30,6 +30,13 @@ export interface Action {
   execution_latency_ms?: number;
 }
 
+export interface TrajectoryFactors {
+  risk_escalation: 'LOW' | 'MEDIUM' | 'HIGH';
+  resource_diversity: 'LOW' | 'MEDIUM' | 'HIGH';
+  destructive_actions: 'LOW' | 'MEDIUM' | 'HIGH';
+  action_velocity: 'LOW' | 'MEDIUM' | 'HIGH';
+}
+
 export interface DecisionResult {
   action_id: string;
   session_id: string;
@@ -38,11 +45,16 @@ export interface DecisionResult {
   risk_class: RiskLevel;
   auth_ok: boolean;
   drift_score: number;
+  current_session_drift?: number;
+  cross_session_drift?: number;
+  factors?: TrajectoryFactors;
+  explanation?: string;
   requires_human_confirm: boolean;
   approved_by?: string;
   approved_at?: string;
   created_at: string;
   execution_latency_ms?: number;
+  idempotent_replay?: boolean;
 }
 
 export interface AuditLogEntry {

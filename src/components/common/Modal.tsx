@@ -38,9 +38,9 @@ export const Modal: React.FC<ModalProps> = ({
   }, [isOpen, onClose]);
 
   const borderVariant = {
-    default: 'border-cyan-500/30 shadow-cyan-950/50',
-    amber: 'border-amber-500/40 shadow-amber-950/50',
-    danger: 'border-rose-500/40 shadow-rose-950/50',
+    default: 'border-cyan-400 dark:border-cyan-500/30 shadow-cyan-950/20',
+    amber: 'border-amber-400 dark:border-amber-500/40 shadow-amber-950/20',
+    danger: 'border-rose-400 dark:border-rose-500/40 shadow-rose-950/20',
   }[variant];
 
   return (
@@ -53,7 +53,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"
           />
 
           {/* Modal Container */}
@@ -62,19 +62,19 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full ${maxWidth} bg-[#0c101a] border rounded-2xl shadow-2xl p-6 text-slate-100 z-10 ${borderVariant}`}
+            className={`relative w-full ${maxWidth} bg-white dark:bg-[#0c101a] border rounded-2xl shadow-2xl p-6 text-slate-900 dark:text-slate-100 z-10 transition-colors duration-200 ${borderVariant}`}
           >
             {/* Header */}
-            <div className="flex items-start justify-between pb-4 mb-4 border-b border-slate-800">
+            <div className="flex items-start justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2 font-mono">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2 font-mono">
                   {title}
                 </h3>
-                {subtitle && <p className="text-xs text-slate-400 mt-1">{subtitle}</p>}
+                {subtitle && <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/80 transition-colors"
+                className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />

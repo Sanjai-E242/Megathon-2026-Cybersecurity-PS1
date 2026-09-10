@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Shield, Play, ArrowRight, Zap, CheckCircle2, AlertTriangle, XCircle, Database } from 'lucide-react';
+import { Terminal, Play, ArrowRight, Zap } from 'lucide-react';
 import { SecurityCore3D } from '../3d/SecurityCore3D';
 import { MobileHeroFallback } from '../3d/MobileHeroFallback';
 
@@ -10,9 +10,9 @@ interface HeroSectionProps {
 }
 
 const SAMPLE_INTERCEPTIONS = [
-  { agent: 'agent_sql_runner', op: 'read_file', target: 'schema.sql', decision: 'ALLOW', color: 'text-emerald-400' },
-  { agent: 'user_42', op: 'update_record', target: 'customers_bulk', decision: 'CONFIRM', color: 'text-amber-400' },
-  { agent: 'agent_drift_09', op: 'delete_table', target: 'orders_prod', decision: 'BLOCK', color: 'text-rose-400' },
+  { agent: 'agent_sql_runner', op: 'read_file', target: 'schema.sql', decision: 'ALLOW', color: 'text-emerald-500 dark:text-emerald-400' },
+  { agent: 'user_42', op: 'update_record', target: 'customers_bulk', decision: 'CONFIRM', color: 'text-amber-500 dark:text-amber-400' },
+  { agent: 'agent_drift_09', op: 'delete_table', target: 'orders_prod', decision: 'BLOCK', color: 'text-rose-500 dark:text-rose-400' },
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAttackDemo }) => {
@@ -43,9 +43,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/40 text-cyan-300 text-xs font-mono mb-6 shadow-sm shadow-cyan-500/20"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-slate-900/90 border border-cyan-400/50 dark:border-cyan-500/40 text-cyan-700 dark:text-cyan-300 text-xs font-mono mb-6 shadow-sm"
             >
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-ping" />
               <span className="font-semibold">RUNTIME SECURITY FOR AI AGENTS</span>
             </motion.div>
 
@@ -54,10 +54,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]"
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]"
             >
               Watch every action.{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-600 to-indigo-600 dark:from-cyan-400 dark:via-sky-300 dark:to-indigo-400">
                 Stop the wrong ones.
               </span>
             </motion.h1>
@@ -67,7 +67,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              className="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
             >
               A deterministic security middleware layer sitting between AI agents and execution tools. Enforce authorization, detect behavioral drift, and intercept dangerous operations before execution.
             </motion.p>
@@ -90,7 +90,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
 
               <button
                 onClick={onRunAttackDemo}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-mono text-sm font-semibold text-rose-300 bg-rose-950/40 border border-rose-500/40 hover:bg-rose-900/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-mono text-sm font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="w-4 h-4" />
                 <span>Run Attack Simulation</span>
@@ -102,24 +102,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-8 flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-slate-400"
+              className="mt-8 flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-slate-500 dark:text-slate-400"
             >
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               <span>Deterministic runtime enforcement. No model retraining required.</span>
             </motion.div>
           </div>
 
           {/* Right 3D Security Core Simulation */}
           <div className="lg:col-span-6 relative">
-            <div className="cyber-panel rounded-2xl p-2 relative overflow-hidden border border-slate-700/60 shadow-2xl">
+            <div className="cyber-panel rounded-2xl p-2 relative overflow-hidden border border-slate-200 dark:border-slate-700/60 shadow-2xl transition-colors duration-200">
               
               {/* Header Bar of 3D Panel */}
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 rounded-t-xl border-b border-slate-800 text-xs font-mono">
+              <div className="flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-slate-900/80 rounded-t-xl border-b border-slate-200 dark:border-slate-800 text-xs font-mono">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-slate-300 font-semibold">RUNTIME INTERCEPTOR CORE</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                  <span className="text-slate-700 dark:text-slate-300 font-semibold">RUNTIME INTERCEPTOR CORE</span>
                 </div>
-                <span className="text-[11px] text-cyan-400">LATENCY: ~12ms</span>
+                <span className="text-[11px] text-cyan-700 dark:text-cyan-400 font-semibold">LATENCY: ~12ms</span>
               </div>
 
               {/* 3D Scene Desktop vs 2D Mobile Fallback */}
@@ -131,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
               </div>
 
               {/* Dynamic Live Action Interception Ticker */}
-              <div className="absolute bottom-4 left-4 right-4 bg-slate-950/90 backdrop-blur-md rounded-xl p-3.5 border border-slate-800 text-xs font-mono shadow-xl">
+              <div className="absolute bottom-4 left-4 right-4 bg-white/95 dark:bg-slate-950/90 backdrop-blur-md rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 text-xs font-mono shadow-xl transition-colors duration-200">
                 <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Live Interception Stream</div>
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -142,15 +142,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsole, onRunAt
                     className="flex items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-indigo-400">{currentSample.agent}</span>
-                      <span className="text-slate-500">→</span>
-                      <span className="text-cyan-300 font-semibold">{currentSample.op}</span>
+                      <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{currentSample.agent}</span>
+                      <span className="text-slate-400">→</span>
+                      <span className="text-cyan-700 dark:text-cyan-300 font-semibold">{currentSample.op}</span>
                       <span className="text-slate-500">({currentSample.target})</span>
                     </div>
                     <span className={`font-bold tracking-wider px-2 py-0.5 rounded text-[11px] border ${
-                      currentSample.decision === 'ALLOW' ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/50' :
-                      currentSample.decision === 'CONFIRM' ? 'bg-amber-950/80 text-amber-400 border-amber-500/50' :
-                      'bg-rose-950/90 text-rose-300 border-rose-500/60'
+                      currentSample.decision === 'ALLOW' ? 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/50' :
+                      currentSample.decision === 'CONFIRM' ? 'bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/50' :
+                      'bg-rose-50 dark:bg-rose-950/90 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-500/60'
                     }`}>
                       {currentSample.decision}
                     </span>

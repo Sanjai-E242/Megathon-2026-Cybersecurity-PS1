@@ -35,21 +35,21 @@ export const DriftChart: React.FC<DriftChartProps> = ({ actions, currentDriftSco
   const isElevated = currentDriftScore > 0.45 && !isCritical;
 
   return (
-    <div className="cyber-panel rounded-2xl p-6 border border-slate-700 shadow-xl flex flex-col h-[520px]">
+    <div className="cyber-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl flex flex-col h-[520px] transition-colors duration-200">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-violet-400" />
-          <h2 className="text-base font-bold font-mono text-white">BEHAVIORAL DRIFT TRAJECTORY</h2>
+          <TrendingUp className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white">BEHAVIORAL DRIFT TRAJECTORY</h2>
         </div>
 
         {/* Live Drift Score Pill */}
         <div className={`flex items-center gap-2 px-3 py-1 rounded-full font-mono text-xs border ${
           isCritical
-            ? 'bg-rose-950/80 border-rose-500/60 text-rose-300 shadow-lg shadow-rose-950/50 animate-pulse'
+            ? 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-500/60 text-rose-700 dark:text-rose-300 shadow-sm animate-pulse'
             : isElevated
-            ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 shadow-sm'
-            : 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
+            ? 'bg-amber-50 dark:bg-amber-950/80 border-amber-300 dark:border-amber-500/60 text-amber-700 dark:text-amber-300 shadow-sm'
+            : 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-500/50 text-emerald-700 dark:text-emerald-300'
         }`}>
           {isCritical ? <ShieldAlert className="w-4 h-4" /> : isElevated ? <AlertTriangle className="w-4 h-4" /> : null}
           <span className="font-bold">LIVE DRIFT: {currentDriftScore.toFixed(2)}</span>
@@ -60,16 +60,16 @@ export const DriftChart: React.FC<DriftChartProps> = ({ actions, currentDriftSco
       </div>
 
       {/* Chart Zone Legend */}
-      <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 my-3">
+      <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 my-3">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" /> Normal (&lt;0.45)
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" /> Normal (&lt;0.45)
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60" /> Elevated (0.45–0.75)
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" /> Elevated (0.45–0.75)
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/60" /> Critical (&gt;0.75)
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" /> Critical (&gt;0.75)
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@ export const DriftChart: React.FC<DriftChartProps> = ({ actions, currentDriftSco
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.6} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" opacity={0.2} />
             
             <XAxis
               dataKey="step"
@@ -109,11 +109,11 @@ export const DriftChart: React.FC<DriftChartProps> = ({ actions, currentDriftSco
                 if (active && payload && payload.length) {
                   const dataPoint = payload[0].payload;
                   return (
-                    <div className="bg-slate-950 border border-slate-700 p-3 rounded-xl shadow-xl text-xs font-mono">
-                      <div className="font-bold text-white mb-1">{dataPoint.name}</div>
-                      <div className="text-slate-400">Target: <span className="text-cyan-300">{dataPoint.target}</span></div>
-                      <div className="text-slate-400">Drift Score: <span className="text-rose-400 font-bold">{dataPoint.score}</span></div>
-                      <div className="text-slate-400">Decision: <span className="text-white font-bold">{dataPoint.decision}</span></div>
+                    <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 p-3 rounded-xl shadow-xl text-xs font-mono">
+                      <div className="font-bold text-slate-900 dark:text-white mb-1">{dataPoint.name}</div>
+                      <div className="text-slate-500 dark:text-slate-400">Target: <span className="text-cyan-700 dark:text-cyan-300 font-semibold">{dataPoint.target}</span></div>
+                      <div className="text-slate-500 dark:text-slate-400">Drift Score: <span className="text-rose-600 dark:text-rose-400 font-bold">{dataPoint.score}</span></div>
+                      <div className="text-slate-500 dark:text-slate-400">Decision: <span className="text-slate-900 dark:text-white font-bold">{dataPoint.decision}</span></div>
                     </div>
                   );
                 }

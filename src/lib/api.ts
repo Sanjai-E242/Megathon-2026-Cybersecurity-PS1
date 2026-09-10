@@ -2,12 +2,25 @@ import { Action, AuditLogEntry, DecisionResult, PolicyRule, Principal } from '..
 
 const API_BASE = '/api';
 
+const PRINCIPAL_KEY_MAP: Record<string, string> = {
+  'user_42': 'sentinel_sec_user_key_demo_42',
+  'admin_migration_01': 'sentinel_sec_admin_key_demo_01',
+  'agent_support_01': 'sentinel_sec_support_key_01',
+  'external-agent-01': 'sentinel_sec_live_key_demo_99',
+};
+
 export const api = {
   async submitAction(action: Partial<Action>): Promise<DecisionResult> {
     try {
+      const principalId = action.principal_id || 'external-agent-01';
+      const apiKey = PRINCIPAL_KEY_MAP[principalId] || 'sentinel_sec_live_key_demo_99';
+
       const res = await fetch(`${API_BASE}/actions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
         body: JSON.stringify(action),
       });
       if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -22,7 +35,11 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/actions/decisions/${actionId}/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Operator-Role': 'SOC_ADMIN',
+          'X-Operator-ID': operator,
+        },
         body: JSON.stringify({ operator }),
       });
       if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -37,7 +54,11 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/actions/decisions/${actionId}/deny`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Operator-Role': 'SOC_ADMIN',
+          'X-Operator-ID': operator,
+        },
         body: JSON.stringify({ operator }),
       });
       if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -103,9 +124,47 @@ export const api = {
     }
   },
 
+  async getSandboxState(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/sandbox/state`);
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      return null;
+    }
+  },
+
+  async executeSandboxAction(action: Partial<Action>): Promise<any> {
+    try {
+      const principalId = action.principal_id || 'external-agent-01';
+      const apiKey = PRINCIPAL_KEY_MAP[principalId] || 'sentinel_sec_live_key_demo_99';
+
+      const res = await fetch(`${API_BASE}/sandbox/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(action),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('Sandbox API error, falling back to Sentinel submit:', err);
+      const decision = await this.submitAction(action);
+      return {
+        execution_status: decision.decision === 'ALLOW' ? 'EXECUTED' : decision.decision === 'CONFIRM' ? 'WAITING_FOR_CONFIRMATION' : 'BLOCKED',
+        sentinel_decision: decision,
+        sandbox_output: decision.decision === 'ALLOW' ? { status: 'EXECUTED_FALLBACK' } : null,
+        message: decision.reason,
+      };
+    }
+  },
+
   async resetDemo(): Promise<void> {
     try {
       await fetch(`${API_BASE}/sessions/reset`, { method: 'POST' });
+      await fetch(`${API_BASE}/sandbox/reset`, { method: 'POST' });
     } catch (err) {
       console.warn('Reset error:', err);
     }
